@@ -3,7 +3,7 @@ Total no of X Students worked on the internship project
 
 | Full Name          | Mobile No  | Email address               | GithubUserName  | LinkedIn Link                                                                                                          |
 | ------------------ | ---------- | --------------------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| Aman Bhandare      | 9359244086 | amanbhandare@gmail.com      | amanbhandare09  | [amanbhandare](https://www.linkedin.com/in/amanbhandare)                                                               |
+| Aman       | 9XY924408S | aman@gmail.com      | amanbhandare09  | [amanbhandare](https://www.linkedin.com/in/amanbhandare)                                                               |
 
 
 ## Training Period
