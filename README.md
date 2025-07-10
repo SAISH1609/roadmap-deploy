@@ -1,5 +1,5 @@
 # Internship 2025
-Total no of 2 Students worked on the internship project
+Total no of 3 Students worked on the internship project
 
 | Full Name          | Mobile No  | Email address               | GithubUserName  | LinkedIn Link                                                                                                          |
 | ------------------ | ---------- | --------------------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------- |
