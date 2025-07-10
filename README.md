@@ -11,7 +11,7 @@ Total no of 9 Students worked on the internship project
 | Jonathan Raposo  | 8767227381  | jnthnraposo@gmail.com             | Jonathanraposo1827 | [Jonathan Raposo](https://www.linkedin.com/in/jonathan-raposo-0416b8266/) |
 | Saanvi Gude    | 9623044012 | saanvigude04@gmail.com | SaanviGude | [Saanvi Gude](https://www.linkedin.com/in/saanvigude/)
 | Saish Chodankar    | 9822104230 | saishchodankar1902@gmail.com | SAISH1609 | [Saish Chodankar](https://www.linkedin.com/in/saish-chodankar-4727b9270/)
-
+| Goraksh Naik | 9022360966 | goraksh.naik30@gmail.com| goraksh2003 | https://www.linkedin.com/in/goraksh-naik-76a17034b/|
 
 ## Training Period
 
