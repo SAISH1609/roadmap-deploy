@@ -3,7 +3,7 @@ Total no of X Students worked on the internship project
 
 | Full Name          | Mobile No  | Email address               | GithubUserName  | LinkedIn Link                                                                                                          |
 | ------------------ | ---------- | --------------------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| Aman       | 9XY924408S | aman@gmail.com      | amanbhandare09  | [amanbhandare](https://www.linkedin.com/in/amanbhandare)                                                               |
+| Soham Ghotge       | 8767151708 | sohamghotge@gmail.com      | SohamGhotge  | [SohamGhotge](https://www.linkedin.com/in/sohamghotge)                                                               |
 
 
 ## Training Period
