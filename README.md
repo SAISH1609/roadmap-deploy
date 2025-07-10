@@ -8,6 +8,8 @@ Total no of 3 Students worked on the internship project
 | Shejal panjikar    | 9373394890 | shejalpanjikar.edu@gmail.com | shejalpanjikar | [ShejalPanjikar](https://www.linkedin.com/in/shejalpanjikar28/)                                                                 |
 | Rohit Binoj    | 7722058504 | rohitbinoj@gmail.com | rohitbinoj | [Rohit Binoj](https://www.linkedin.com/in/rohit-binoj-978019129/)
 | Vedant kotkar    | 8010413602 | vedantkotkar777@gmail.com | veedankk | [vedant kotkar](www.linkedin.com/in/vedant-kotkar-3a94b5259)
+| Jonathan Raposo  | 8767227381  | jnthnraposo@gmail.com             | Jonathanraposo1827 | [Jonathan Raposo](https://www.linkedin.com/in/jonathan-raposo-0416b8266/) |
+
 
 
 
