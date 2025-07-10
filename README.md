@@ -12,6 +12,7 @@ Total no of 9 Students worked on the internship project
 | Saanvi Gude    | 9623044012 | saanvigude04@gmail.com | SaanviGude | [Saanvi Gude](https://www.linkedin.com/in/saanvigude/)
 | Saish Chodankar    | 9822104230 | saishchodankar1902@gmail.com | SAISH1609 | [Saish Chodankar](https://www.linkedin.com/in/saish-chodankar-4727b9270/)
 | Goraksh Naik | 9022360966 | goraksh.naik30@gmail.com| goraksh2003 | https://www.linkedin.com/in/goraksh-naik-76a17034b/|
+| Srideep Kavlekar    | 9145731620 | ksrideep15@gmail.com | ksrideep15 | [Srideep Kavlekar](https://www.linkedin.com/in/srideep-kavlekar-292156140/)
 
 ## Training Period
 
