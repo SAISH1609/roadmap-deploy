@@ -9,6 +9,7 @@ import {
   DialogFooter,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useCreateTeamStore } from "@/store/createTeamStore";
 
 interface Step2Props {
   nextStep: () => void;
@@ -19,8 +20,11 @@ interface Step2Props {
 const availableRoadmaps = ["React", "PostgreSQL", "Javascript", "Python"];
 
 const Step2_SelectSkills = ({ nextStep, prevStep, updateTeamData }: Step2Props) => {
-  const [selectedRoadmaps, setSelectedRoadmaps] = useState<string[]>([]);
-  const [roadmapDetails, setRoadmapDetails] = useState<{ [key: string]: boolean }>({});
+  const { teamData } = useCreateTeamStore();
+  const [selectedRoadmaps, setSelectedRoadmaps] = useState<string[]>(teamData.roadmaps.map(r => r.name));
+  const [roadmapDetails, setRoadmapDetails] = useState<{ [key: string]: boolean }>(
+    teamData.roadmaps.reduce((acc, curr) => ({ ...acc, [curr.name]: curr.copyDetails }), {})
+  );
   const [currentRoadmap, setCurrentRoadmap] = useState<string | null>(null);
 
   const handleSelectRoadmap = (roadmap: string) => {

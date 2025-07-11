@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { X } from "lucide-react";
+import { useCreateTeamStore } from "@/store/createTeamStore";
 
 interface Step3Props {
   prevStep: () => void;
@@ -13,24 +14,29 @@ interface Step3Props {
   };
 }
 
-const Step3_AddMembers = ({ prevStep, teamData }: Step3Props) => {
-  const [emails, setEmails] = useState<string[]>([]);
+const Step3_AddMembers = ({ prevStep }: Step3Props) => {
+  const { teamData, updateTeamData } = useCreateTeamStore();
+  const [emails, setEmails] = useState<string[]>(teamData.members);
   const [currentEmail, setCurrentEmail] = useState("");
 
   const handleAddEmail = () => {
     if (currentEmail && !emails.includes(currentEmail)) {
-      setEmails([...emails, currentEmail]);
+      const newEmails = [...emails, currentEmail];
+      setEmails(newEmails);
+      updateTeamData({ members: newEmails });
       setCurrentEmail("");
     }
   };
 
   const handleRemoveEmail = (emailToRemove: string) => {
-    setEmails(emails.filter(email => email !== emailToRemove));
+    const newEmails = emails.filter(email => email !== emailToRemove);
+    setEmails(newEmails);
+    updateTeamData({ members: newEmails });
   };
 
   const handleFinish = () => {
     // In a real app, you'd send the invites and create the team here.
-    alert("Team created and invites sent (not really)!");
+    alert(`Team "${teamData.name}" created and invites sent to ${teamData.members.join(', ')} (not really)!`);
   };
 
   return (

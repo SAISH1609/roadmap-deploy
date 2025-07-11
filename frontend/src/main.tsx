@@ -1,17 +1,18 @@
-import { StrictMode } from 'react'
+import { StrictMode, lazy, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router'
-import './index.css'
+import './styles/globals.css'
 import App from './App.tsx'
-import HomePage from './pages/HomePage.tsx'
-import AccountDashboard from './pages/AccountDashboard/AccountDashboard.tsx'
-import ActivityView from './pages/AccountDashboard/components/ActivityView.tsx'
-import Profile from './pages/AccountDashboard/components/Profile.tsx'
-import TeamActivity from './pages/AccountDashboard/components/team/TeamActivity.tsx'
-import TeamProgress from './pages/AccountDashboard/components/team/TeamProgress.tsx'
-import TeamRoadmaps from './pages/AccountDashboard/components/team/TeamRoadmaps.tsx'
-import TeamMembers from './pages/AccountDashboard/components/team/TeamMembers.tsx'
-import CreateTeamPage from './pages/CreateTeamPage/CreateTeamPage.tsx'
+
+const HomePage = lazy(() => import('./pages/HomePage.tsx'))
+const AccountDashboard = lazy(() => import('./features/dashboard/AccountDashboard.tsx'))
+const ActivityView = lazy(() => import('./features/dashboard/components/ActivityView.tsx'))
+const Profile = lazy(() => import('./features/dashboard/components/Profile.tsx'))
+const TeamActivity = lazy(() => import('./features/dashboard/components/team/TeamActivity.tsx'))
+const TeamProgress = lazy(() => import('./features/dashboard/components/team/TeamProgress.tsx'))
+const TeamRoadmaps = lazy(() => import('./features/dashboard/components/team/TeamRoadmaps.tsx'))
+const TeamMembers = lazy(() => import('./features/dashboard/components/team/TeamMembers.tsx'))
+const CreateTeamPage = lazy(() => import('./features/create-team/CreateTeamPage.tsx'))
 
 const router = createBrowserRouter([
   {
@@ -62,6 +63,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <Suspense fallback={<div>Loading...</div>}>
+      <RouterProvider router={router} />
+    </Suspense>
   </StrictMode>,
 )
