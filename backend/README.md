@@ -135,8 +135,7 @@ nano .env
 
 Update the `.env` file with your database credentials:
 
-# Y'all can
-
+The sendgrid api key insert can be skipped for now
 ```env
 DATABASE_URL=postgresql://your_username:your_password@localhost:5432/roadmap_db
 DATABASE_URL_TEST=postgresql://your_username:your_password@localhost:5432/roadmapdb_test
