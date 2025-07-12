@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
+import GuidesPage from '../components/ui/GuidesPage';
+import VideosSection from '../components/ui/VideosSection';
 
 const HomePage = () => {
   const [selectedTab, setSelectedTab] = useState('personal');
@@ -81,6 +83,12 @@ const HomePage = () => {
                   </Card>
                 ))}
               </div>
+            </div>
+
+            {/* Guides Section */}
+            <div className="mt-10">
+              <GuidesPage />
+              <VideosSection />
             </div>
           </div>
         )}

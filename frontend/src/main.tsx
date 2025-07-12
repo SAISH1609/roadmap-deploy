@@ -13,6 +13,7 @@ const TeamProgress = lazy(() => import('./features/dashboard/components/team/Tea
 const TeamRoadmaps = lazy(() => import('./features/dashboard/components/team/TeamRoadmaps.tsx'))
 const TeamMembers = lazy(() => import('./features/dashboard/components/team/TeamMembers.tsx'))
 const CreateTeamPage = lazy(() => import('./features/create-team/CreateTeamPage.tsx'))
+const GuidesPage = lazy(() => import('./components/ui/GuidesPage'))
 
 const router = createBrowserRouter([
   {
@@ -56,6 +57,10 @@ const router = createBrowserRouter([
       {
         path: 'teams/create',
         element: <CreateTeamPage />,
+      },
+      {
+        path: 'guides',
+        element: <GuidesPage />,
       }
     ],
   },
