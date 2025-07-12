@@ -5,7 +5,6 @@ A FastAPI-based backend for a roadmap learning platform clone, featuring user au
 ## Features
 
 - **User Authentication**: JWT-based authentication with user registration and login
-- **Email Verification**: Users start as unverified, can be verified via admin or API
 - **Roadmap Management**: Interactive roadmaps with topics and resources
 - **Team Collaboration**: Create teams, invite members, track team progress
 - **Progress Tracking**: Individual and team progress on roadmaps
