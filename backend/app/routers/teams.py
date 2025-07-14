@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from app.database import get_db
 from app.schemas.schemas import Team, TeamCreate, TeamInvite, TeamMember, TeamInvitation
@@ -120,7 +120,7 @@ def accept_invitation(
     if invitation.is_accepted:
         raise HTTPException(status_code=400, detail="Invitation already accepted")
     
-    if invitation.expires_at and invitation.expires_at < datetime.utcnow():
+    if invitation.expires_at and invitation.expires_at < datetime.now(timezone.utc):
         raise HTTPException(status_code=400, detail="Invitation has expired")
     
     if invitation.email != current_user.email:
