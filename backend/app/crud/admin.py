@@ -47,7 +47,7 @@ def add_topic_to_roadmap(db: Session, roadmap_id: int, topic_data: AdminTopicCre
         title=topic_data.title,
         description=topic_data.description,
         order_index=topic_data.order_index,
-        is_optional=topic_data.is_optional
+        is_required=topic_data.is_required
     )
     db.add(db_topic)
     db.commit()

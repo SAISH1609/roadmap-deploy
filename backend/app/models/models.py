@@ -152,7 +152,7 @@ class TopicResource(Base):
     topic_id = Column(Integer, ForeignKey('roadmap_topics.id'), nullable=False)
     title = Column(String(255), nullable=False)
     url = Column(String(500), nullable=False)
-    resource_type = Column(Enum(ResourceType), nullable=False)
+    resource_type = Column(String(50), nullable=False)
     is_free = Column(Boolean, default=True)
     description = Column(Text)
     order_index = Column(Integer, default=0)
