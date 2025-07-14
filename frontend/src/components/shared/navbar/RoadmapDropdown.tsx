@@ -1,17 +1,19 @@
-// components/shared/Navbar/RoadmapDropdown.tsx
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
+import { useNavigate } from "react-router";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 export default function RoadmapDropdown() {
+  const navigate = useNavigate();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost">AI tutor</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
+        <DropdownMenuItem onClick={() => navigate("/ai-tutor")}>Ask AI Tutor</DropdownMenuItem>
         <DropdownMenuItem>Create with AI</DropdownMenuItem>
-        <DropdownMenuItem>Ask AI Tutor</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }

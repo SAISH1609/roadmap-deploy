@@ -14,6 +14,7 @@ const TeamRoadmaps = lazy(() => import('./features/dashboard/components/team/Tea
 const TeamMembers = lazy(() => import('./features/dashboard/components/team/TeamMembers.tsx'))
 const CreateTeamPage = lazy(() => import('./features/create-team/CreateTeamPage.tsx'))
 const GuidesPage = lazy(() => import('./components/ui/GuidesPage'))
+const AITutorChat = lazy(() => import('./components/ui/AITutorChat'))
 
 const router = createBrowserRouter([
   {
@@ -61,9 +62,13 @@ const router = createBrowserRouter([
       {
         path: 'guides',
         element: <GuidesPage />,
-      }
+      },
     ],
   },
+  {
+    path: '/ai-tutor',
+    element: <AITutorChat />,
+  }
 ])
 
 createRoot(document.getElementById('root')!).render(
