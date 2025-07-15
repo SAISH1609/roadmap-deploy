@@ -1,8 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, ForeignKey, Table, Enum
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-import enum
-
 from app.database import Base
 
 team_roadmaps = Table(
@@ -20,13 +18,6 @@ user_bookmarks = Table(
     Column('roadmap_id', Integer, ForeignKey('roadmaps.id'), primary_key=True),
     Column('bookmarked_at', DateTime(timezone=True), server_default=func.now())
 )
-
-class ResourceType(enum.Enum):
-    ARTICLE = "article"
-    VIDEO = "video"
-    COURSE = "course"
-    DOCUMENTATION = "documentation"
-    TUTORIAL = "tutorial"
 
 class User(Base):
     __tablename__ = "users"

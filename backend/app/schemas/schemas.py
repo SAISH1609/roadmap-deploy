@@ -1,14 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List
 from datetime import datetime
-from enum import Enum
-
-class ResourceType(str, Enum):
-    ARTICLE = "article"
-    VIDEO = "video"
-    COURSE = "course"
-    DOCUMENTATION = "documentation"
-    TUTORIAL = "tutorial"
 
 # User Schemas
 class UserBase(BaseModel):
@@ -94,7 +86,7 @@ class RoadmapCreate(RoadmapBase):
 class TopicResourceBase(BaseModel):
     title: str
     url: str
-    resource_type: ResourceType
+    resource_type: str
     is_free: bool = True
     description: Optional[str] = None
 
@@ -241,7 +233,7 @@ class AdminTopicCreate(BaseModel):
 class AdminResourceCreate(BaseModel):
     title: str
     url: str
-    resource_type: ResourceType
+    resource_type: str
     is_free: bool = True
     description: Optional[str] = None
     order_index: int = 1

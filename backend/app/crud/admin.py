@@ -68,7 +68,7 @@ def add_resource_to_topic(db: Session, topic_id: int, resource_data: AdminResour
         topic_id=topic_id,
         title=resource_data.title,
         url=resource_data.url,
-        resource_type=resource_data.resource_type.value,
+        resource_type=resource_data.resource_type,
         is_free=resource_data.is_free,
         description=resource_data.description,
         order_index=resource_data.order_index
