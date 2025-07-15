@@ -112,8 +112,6 @@ def create_sample_data():
                 "roadmap_id": sql_roadmap.id,
                 "title": "What are Relational Databases?",
                 "description": "Introduction to relational databases and RDBMS concepts",
-                "position_x": 100,
-                "position_y": 50,
                 "order_index": 1,
                 "is_required": True
             },
@@ -121,8 +119,6 @@ def create_sample_data():
                 "roadmap_id": sql_roadmap.id,
                 "title": "Basic SQL Syntax",
                 "description": "Learn fundamental SQL commands and syntax",
-                "position_x": 200,
-                "position_y": 100,
                 "order_index": 2,
                 "is_required": True
             },
@@ -130,8 +126,6 @@ def create_sample_data():
                 "roadmap_id": sql_roadmap.id,
                 "title": "Data Definition Language (DDL)",
                 "description": "CREATE, ALTER, DROP statements",
-                "position_x": 150,
-                "position_y": 150,
                 "order_index": 3,
                 "is_required": True
             },
@@ -139,8 +133,6 @@ def create_sample_data():
                 "roadmap_id": sql_roadmap.id,
                 "title": "Data Manipulation Language (DML)",
                 "description": "INSERT, UPDATE, DELETE operations",
-                "position_x": 250,
-                "position_y": 150,
                 "order_index": 4,
                 "is_required": True
             },
@@ -148,8 +140,6 @@ def create_sample_data():
                 "roadmap_id": sql_roadmap.id,
                 "title": "SELECT Statements",
                 "description": "Querying data from tables",
-                "position_x": 200,
-                "position_y": 200,
                 "order_index": 5,
                 "is_required": True
             },
@@ -157,8 +147,6 @@ def create_sample_data():
                 "roadmap_id": sql_roadmap.id,
                 "title": "WHERE Clause",
                 "description": "Filtering data with conditions",
-                "position_x": 150,
-                "position_y": 250,
                 "order_index": 6,
                 "is_required": True
             },
@@ -166,8 +154,6 @@ def create_sample_data():
                 "roadmap_id": sql_roadmap.id,
                 "title": "JOINs",
                 "description": "Combining data from multiple tables",
-                "position_x": 250,
-                "position_y": 250,
                 "order_index": 7,
                 "is_required": True
             },
@@ -175,8 +161,6 @@ def create_sample_data():
                 "roadmap_id": sql_roadmap.id,
                 "title": "Aggregate Functions",
                 "description": "COUNT, SUM, AVG, MIN, MAX functions",
-                "position_x": 200,
-                "position_y": 300,
                 "order_index": 8,
                 "is_required": True
             },
@@ -184,8 +168,6 @@ def create_sample_data():
                 "roadmap_id": sql_roadmap.id,
                 "title": "GROUP BY and HAVING",
                 "description": "Grouping and filtering grouped data",
-                "position_x": 150,
-                "position_y": 350,
                 "order_index": 9,
                 "is_required": True
             },
@@ -193,8 +175,6 @@ def create_sample_data():
                 "roadmap_id": sql_roadmap.id,
                 "title": "Subqueries",
                 "description": "Nested queries and correlated subqueries",
-                "position_x": 250,
-                "position_y": 350,
                 "order_index": 10,
                 "is_required": False
             },
@@ -202,8 +182,6 @@ def create_sample_data():
                 "roadmap_id": sql_roadmap.id,
                 "title": "Indexes",
                 "description": "Database indexing for performance",
-                "position_x": 300,
-                "position_y": 300,
                 "order_index": 11,
                 "is_required": False
             },
@@ -211,8 +189,6 @@ def create_sample_data():
                 "roadmap_id": sql_roadmap.id,
                 "title": "Stored Procedures",
                 "description": "Creating and using stored procedures",
-                "position_x": 350,
-                "position_y": 250,
                 "order_index": 12,
                 "is_required": False
             }
