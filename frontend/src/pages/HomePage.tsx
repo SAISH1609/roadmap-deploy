@@ -21,8 +21,9 @@ const HomePage = () => {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-blue-950 via-black to-black">
       <div className="container mx-auto px-4 py-8">
+        
         {/* Teams Section */}
         <div className="flex space-x-4 border-b pb-2 mb-4">
           <Button
@@ -78,7 +79,15 @@ const HomePage = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {skillRoadmaps.map((skill) => (
                   <Card key={skill.name} className="p-4">
-                    <h3 className="font-semibold">{skill.name}</h3>
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold">{skill.name}</h3>
+                      <span aria-label="bookmark" className="ml-2">
+                        <svg width="15" height="16" viewBox="0 0 20 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M4 2C2.89543 2 2 2.89543 2 4V22L10 18L18 22V4C18 2.89543 17.1046 2 16 2H4Z" fill="#2563eb" stroke="#2563eb" strokeWidth="2" strokeLinejoin="round"/>
+                          
+                        </svg>
+                      </span>
+                    </div>
                     <p className="text-sm text-gray-500">{skill.description}</p>
                   </Card>
                 ))}
