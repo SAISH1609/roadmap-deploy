@@ -1,7 +1,7 @@
-import { Link } from 'react-router'
-import AccountDropdown from './AccountDropdown'
-import RoadmapDropdown from './RoadmapDropdown'
-import AITutorDropdown from './AITutorDropdown'
+import { Link } from 'react-router';
+import AuthNav from './AuthNav';
+import RoadmapDropdown from './RoadmapDropdown';
+import AITutorDropdown from './AITutorDropdown';
 
 export default function Navbar() {
     return (
@@ -11,7 +11,7 @@ export default function Navbar() {
           <RoadmapDropdown />
           <AITutorDropdown />
         </div>
-        <AccountDropdown />
+        <AuthNav />
       </nav>
     )
   }
