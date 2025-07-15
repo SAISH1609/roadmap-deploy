@@ -4,6 +4,7 @@ Run this after setting up the database and running migrations
 """
 
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 from app.database import SessionLocal, engine
 from app.models.models import (
     User, Roadmap, RoadmapTopic, TopicResource, Skill, 
@@ -15,6 +16,18 @@ def create_sample_data():
     db = SessionLocal()
     
     try:
+        # Clear existing data by truncating all relevant tables
+        print("Clearing existing data...")
+        db.execute(text("""
+            TRUNCATE TABLE 
+                users, teams, skills, team_skills, team_invitations, roadmaps, 
+                roadmap_topics, topic_resources, user_progress, topic_progress, 
+                user_activities, team_members, team_roadmaps, user_bookmarks
+            RESTART IDENTITY CASCADE;
+        """))
+        db.commit()
+        print("Data cleared successfully.")
+
         # Create sample skills
         skills_data = [
             {"name": "JavaScript", "category": "Programming", "is_predefined": True},
@@ -209,7 +222,7 @@ def create_sample_data():
                 "topic_id": topic_objects[0].id,
                 "title": "Introduction to Relational Databases",
                 "url": "https://www.oracle.com/database/what-is-a-relational-database/",
-                "resource_type": ResourceType.ARTICLE,
+                "resource_type": ResourceType.ARTICLE.value,
                 "is_free": True,
                 "description": "Oracle's comprehensive guide to relational databases",
                 "order_index": 1
@@ -218,7 +231,7 @@ def create_sample_data():
                 "topic_id": topic_objects[0].id,
                 "title": "Database Fundamentals",
                 "url": "https://www.youtube.com/watch?v=wR0jg0eQsZA",
-                "resource_type": ResourceType.VIDEO,
+                "resource_type": ResourceType.VIDEO.value,
                 "is_free": True,
                 "description": "Video introduction to database concepts",
                 "order_index": 2
@@ -228,7 +241,7 @@ def create_sample_data():
                 "topic_id": topic_objects[1].id,
                 "title": "SQL Tutorial",
                 "url": "https://www.w3schools.com/sql/",
-                "resource_type": ResourceType.TUTORIAL,
+                "resource_type": ResourceType.TUTORIAL.value,
                 "is_free": True,
                 "description": "Interactive SQL tutorial from W3Schools",
                 "order_index": 1
@@ -237,7 +250,7 @@ def create_sample_data():
                 "topic_id": topic_objects[1].id,
                 "title": "SQL Syntax Guide",
                 "url": "https://www.postgresql.org/docs/current/sql-syntax.html",
-                "resource_type": ResourceType.DOCUMENTATION,
+                "resource_type": ResourceType.DOCUMENTATION.value,
                 "is_free": True,
                 "description": "PostgreSQL official syntax documentation",
                 "order_index": 2
@@ -247,7 +260,7 @@ def create_sample_data():
                 "topic_id": topic_objects[4].id,
                 "title": "Mastering SQL SELECT",
                 "url": "https://mode.com/sql-tutorial/sql-select-statement/",
-                "resource_type": ResourceType.TUTORIAL,
+                "resource_type": ResourceType.TUTORIAL.value,
                 "is_free": True,
                 "description": "Comprehensive SELECT statement tutorial",
                 "order_index": 1
@@ -256,7 +269,7 @@ def create_sample_data():
                 "topic_id": topic_objects[4].id,
                 "title": "SQL SELECT Examples",
                 "url": "https://www.sqlitetutorial.net/sqlite-select/",
-                "resource_type": ResourceType.ARTICLE,
+                "resource_type": ResourceType.ARTICLE.value,
                 "is_free": True,
                 "description": "Practical SELECT statement examples",
                 "order_index": 2
