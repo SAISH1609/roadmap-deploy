@@ -234,7 +234,7 @@ The API will be available at `http://localhost:8000`
 ### Priority 2: Sample Data Creation
 
 Create SQL scripts or Python scripts to populate:
-
+**NOTE: Running create_sample_data.py will first delete existing data from your DB, before running and inserting data. To run successfully, and avoid duplication**
 1. **Predefined Skills**:
 
 ```sql
