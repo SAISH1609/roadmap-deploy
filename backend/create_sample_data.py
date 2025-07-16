@@ -3,32 +3,55 @@ Sample data insertion script for Roadmap.sh Clone
 Run this after setting up the database and running migrations
 """
 
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, Session
 from sqlalchemy import text
-from app.database import SessionLocal, engine
+from app.database import SessionLocal
 from app.models.models import (
-    User, Roadmap, RoadmapTopic, TopicResource, Skill, 
-    ResourceType, Team, TeamSkill
+    User, Roadmap, RoadmapTopic, TopicResource, Skill
 )
 from app.core.security import get_password_hash
 
 def create_sample_data():
     db = SessionLocal()
-    
+
     try:
         # Clear existing data by truncating all relevant tables
         print("Clearing existing data...")
         db.execute(text("""
-            TRUNCATE TABLE 
-                users, teams, skills, team_skills, team_invitations, roadmaps, 
-                roadmap_topics, topic_resources, user_progress, topic_progress, 
+            TRUNCATE TABLE
+                users, teams, skills, team_skills, team_invitations, roadmaps,
+                roadmap_topics, topic_resources, user_progress, topic_progress,
                 user_activities, team_members, team_roadmaps, user_bookmarks
             RESTART IDENTITY CASCADE;
         """))
         db.commit()
         print("Data cleared successfully.")
 
-        # Create sample skills
+        # --- Reusable Recursive Function to Process Nested Topics ---
+        def process_topics(topics_data, roadmap_id, parent_id=None):
+            for topic_entry in topics_data:
+                topic_info = topic_entry['topic']
+                
+                # Create the topic object
+                topic = RoadmapTopic(
+                    roadmap_id=roadmap_id,
+                    parent_id=parent_id,
+                    **topic_info
+                )
+                db.add(topic)
+                db.flush()  # Flush to get the new topic.id
+
+                # Process resources for the current topic
+                if 'resources' in topic_entry:
+                    for resource_data in topic_entry['resources']:
+                        resource = TopicResource(topic_id=topic.id, **resource_data)
+                        db.add(resource)
+                
+                # Recursively process children topics
+                if 'children' in topic_entry:
+                    process_topics(topic_entry['children'], roadmap_id, parent_id=topic.id)
+
+        # --- Sample Skills ---
         skills_data = [
             {"name": "JavaScript", "category": "Programming", "is_predefined": True},
             {"name": "Python", "category": "Programming", "is_predefined": True},
@@ -41,254 +64,162 @@ def create_sample_data():
             {"name": "Git", "category": "Version Control", "is_predefined": True},
             {"name": "TypeScript", "category": "Programming", "is_predefined": True},
         ]
-        
         for skill_data in skills_data:
-            skill = Skill(**skill_data)
-            db.add(skill)
-        
-        # Create sample users
+            db.add(Skill(**skill_data))
+        db.commit()
+
+        # --- Sample Users ---
         users_data = [
-            {
-                "email": "john@example.com",
-                "username": "john_doe",
-                "full_name": "John Doe",
-                "hashed_password": get_password_hash("password123"),
-                "is_active": True,
-                "is_verified": True
-            },
-            {
-                "email": "jane@example.com", 
-                "username": "jane_smith",
-                "full_name": "Jane Smith",
-                "hashed_password": get_password_hash("password123"),
-                "is_active": True,
-                "is_verified": True
-            },
-            {
-                "email": "admin@example.com",
-                "username": "admin",
-                "full_name": "Admin User",
-                "hashed_password": get_password_hash("admin123"),
-                "is_active": True,
-                "is_verified": True
-            }
+            { "email": "admin@example.com", "username": "Admin", "full_name": "Admin User", "hashed_password": get_password_hash("admin123"), "is_active": True, "is_verified": True },
+            { "email": "saanvigude04@gmail.com", "username": "SSG", "full_name": "Saanvi Gude", "hashed_password": get_password_hash("SSG123"), "is_active": True, "is_verified": True },
+            { "email": "rohitbinoj@gmail.com", "username": "RB", "full_name": "Rohit Binoj", "hashed_password": get_password_hash("RB123"), "is_active": True, "is_verified": True },
+            { "email": "saishchodankar1902@gmail.com", "username": "SC1902", "full_name": "Saish Chodankar", "hashed_password": get_password_hash("SC123"), "is_active": True, "is_verified": True }
         ]
-        
         for user_data in users_data:
-            user = User(**user_data)
-            db.add(user)
-        
+            db.add(User(**user_data))
         db.commit()
-        
-        # Create SQL Roadmap
-        sql_roadmap = Roadmap(
-            title="SQL Roadmap",
-            slug="sql",
-            description="Step by step guide to learning SQL in 2025",
-            category="Database",
-            is_public=True,
-            total_topics=12,
-            created_by=1
-        )
-        db.add(sql_roadmap)
+
+        # --- Roadmaps ---
+        sql_roadmap = Roadmap(title="SQL Roadmap", slug="sql", description="Step by step guide to learning SQL in 2025", category="Database", is_public=True, total_topics=30, created_by=1)
+        react_roadmap = Roadmap(title="React Developer", slug="react", description="Everything to learn about React and its ecosystem in 2025.", category="Frontend", is_public=True, total_topics=25, created_by=1)
+        python_roadmap = Roadmap(title="Python Developer", slug="python", description="Step by step guide to becoming a Python developer in 2025", category="Programming", is_public=True, total_topics=26, created_by=1)
+        db.add_all([sql_roadmap, react_roadmap, python_roadmap])
         db.commit()
-        
-        # Create React Roadmap
-        react_roadmap = Roadmap(
-            title="React Roadmap",
-            slug="react",
-            description="Complete guide to learning React development",
-            category="Frontend",
-            is_public=True,
-            total_topics=20,
-            created_by=1
-        )
-        db.add(react_roadmap)
-        db.commit()
-        
-        # Create Python Roadmap
-        python_roadmap = Roadmap(
-            title="Python Roadmap",
-            slug="python",
-            description="Comprehensive Python learning path",
-            category="Programming",
-            is_public=True,
-            total_topics=18,
-            created_by=1
-        )
-        db.add(python_roadmap)
-        db.commit()
-        
-        # SQL Roadmap Topics
-        sql_topics = [
+
+        # --- SQL Roadmap Topics (Hierarchical) ---
+        sql_topics_data = [
             {
-                "roadmap_id": sql_roadmap.id,
-                "title": "What are Relational Databases?",
-                "description": "Introduction to relational databases and RDBMS concepts",
-                "order_index": 1,
-                "is_required": True
+                "topic": {"title": "Introduction to Databases", "order_index": 1, "is_required": True},
+                "children": [
+                    {"topic": {"title": "What Are Relational Databases?", "order_index": 1, "is_required": True}, "resources": [{"title": "What is a relational database - AWS", "url": "https://aws.amazon.com/relational-database/", "resource_type": "article", "is_free": True, "order_index": 1}]},
+                    {"topic": {"title": "SQL vs NoSQL Databases", "order_index": 2, "is_required": True}, "resources": [{"title": "SQL vs NoSQL", "url": "https://www.mongodb.com/resources/basics/databases/nosql-explained/nosql-vs-sql", "resource_type": "article", "is_free": True, "order_index": 1}]}
+                ]
             },
             {
-                "roadmap_id": sql_roadmap.id,
-                "title": "Basic SQL Syntax",
-                "description": "Learn fundamental SQL commands and syntax",
-                "order_index": 2,
-                "is_required": True
+                "topic": {"title": "Core SQL Syntax", "order_index": 2, "is_required": True},
+                "children": [
+                    {"topic": {"title": "Basic SQL Syntax", "order_index": 1, "is_required": True}, "resources": [{"title": "SQL Tutorial - Mode", "url": "https://mode.com/sql-tutorial/", "resource_type": "article", "is_free": True, "order_index": 1}]},
+                    {"topic": {"title": "Data Types", "order_index": 2, "is_required": True}, "resources": [{"title": "SQL Data Types", "url": "https://www.digitalocean.com/community/tutorials/sql-data-types", "resource_type": "article", "is_free": True, "order_index": 1}]},
+                    {"topic": {"title": "Operators", "order_index": 3, "is_required": True}, "resources": [{"title": "SQL Operators", "url": "https://www.dataquest.io/blog/sql-operators/", "resource_type": "article", "is_free": True, "order_index": 1}]}
+                ]
             },
             {
-                "roadmap_id": sql_roadmap.id,
-                "title": "Data Definition Language (DDL)",
-                "description": "CREATE, ALTER, DROP statements",
-                "order_index": 3,
-                "is_required": True
+                "topic": {"title": "Data Definition Language (DDL)", "order_index": 3, "is_required": True},
+                "children": [
+                    {"topic": {"title": "CREATE TABLE", "order_index": 1, "is_required": True}},
+                    {"topic": {"title": "ALTER TABLE", "order_index": 2, "is_required": True}},
+                    {"topic": {"title": "DROP TABLE", "order_index": 3, "is_required": True}},
+                    {"topic": {"title": "TRUNCATE TABLE", "order_index": 4, "is_required": True}}
+                ]
             },
             {
-                "roadmap_id": sql_roadmap.id,
-                "title": "Data Manipulation Language (DML)",
-                "description": "INSERT, UPDATE, DELETE operations",
-                "order_index": 4,
-                "is_required": True
+                "topic": {"title": "Data Manipulation Language (DML)", "order_index": 4, "is_required": True},
+                "children": [
+                    {"topic": {"title": "SELECT Statement", "order_index": 1, "is_required": True}},
+                    {"topic": {"title": "INSERT Statement", "order_index": 2, "is_required": True}},
+                    {"topic": {"title": "UPDATE Statement", "order_index": 3, "is_required": True}},
+                    {"topic": {"title": "DELETE Statement", "order_index": 4, "is_required": True}}
+                ]
             },
             {
-                "roadmap_id": sql_roadmap.id,
-                "title": "SELECT Statements",
-                "description": "Querying data from tables",
-                "order_index": 5,
-                "is_required": True
+                "topic": {"title": "Querying Data", "order_index": 5, "is_required": True},
+                "children": [
+                    {"topic": {"title": "WHERE Clause", "order_index": 1, "is_required": True}},
+                    {"topic": {"title": "ORDER BY", "order_index": 2, "is_required": True}},
+                    {"topic": {"title": "GROUP BY", "order_index": 3, "is_required": True}},
+                    {"topic": {"title": "HAVING", "order_index": 4, "is_required": True}},
+                    {"topic": {"title": "JOINs", "order_index": 5, "is_required": True}}
+                ]
             },
             {
-                "roadmap_id": sql_roadmap.id,
-                "title": "WHERE Clause",
-                "description": "Filtering data with conditions",
-                "order_index": 6,
-                "is_required": True
-            },
-            {
-                "roadmap_id": sql_roadmap.id,
-                "title": "JOINs",
-                "description": "Combining data from multiple tables",
-                "order_index": 7,
-                "is_required": True
-            },
-            {
-                "roadmap_id": sql_roadmap.id,
-                "title": "Aggregate Functions",
-                "description": "COUNT, SUM, AVG, MIN, MAX functions",
-                "order_index": 8,
-                "is_required": True
-            },
-            {
-                "roadmap_id": sql_roadmap.id,
-                "title": "GROUP BY and HAVING",
-                "description": "Grouping and filtering grouped data",
-                "order_index": 9,
-                "is_required": True
-            },
-            {
-                "roadmap_id": sql_roadmap.id,
-                "title": "Subqueries",
-                "description": "Nested queries and correlated subqueries",
-                "order_index": 10,
-                "is_required": False
-            },
-            {
-                "roadmap_id": sql_roadmap.id,
-                "title": "Indexes",
-                "description": "Database indexing for performance",
-                "order_index": 11,
-                "is_required": False
-            },
-            {
-                "roadmap_id": sql_roadmap.id,
-                "title": "Stored Procedures",
-                "description": "Creating and using stored procedures",
-                "order_index": 12,
-                "is_required": False
+                "topic": {"title": "Aggregate Functions", "order_index": 6, "is_required": True},
+                "children": [
+                    {"topic": {"title": "COUNT", "order_index": 1, "is_required": True}},
+                    {"topic": {"title": "SUM", "order_index": 2, "is_required": True}},
+                    {"topic": {"title": "AVG", "order_index": 3, "is_required": True}},
+                    {"topic": {"title": "MIN", "order_index": 4, "is_required": True}},
+                    {"topic": {"title": "MAX", "order_index": 5, "is_required": True}}
+                ]
             }
         ]
-        
-        topic_objects = []
-        for topic_data in sql_topics:
-            topic = RoadmapTopic(**topic_data)
-            db.add(topic)
-            topic_objects.append(topic)
-        
+        process_topics(sql_topics_data, sql_roadmap.id)
         db.commit()
-        
-        # Add resources for the first few topics
-        resources_data = [
-            # Resources for "What are Relational Databases?"
-            {
-                "topic_id": topic_objects[0].id,
-                "title": "Introduction to Relational Databases",
-                "url": "https://www.oracle.com/database/what-is-a-relational-database/",
-                "resource_type": ResourceType.ARTICLE.value,
-                "is_free": True,
-                "description": "Oracle's comprehensive guide to relational databases",
-                "order_index": 1
-            },
-            {
-                "topic_id": topic_objects[0].id,
-                "title": "Database Fundamentals",
-                "url": "https://www.youtube.com/watch?v=wR0jg0eQsZA",
-                "resource_type": ResourceType.VIDEO.value,
-                "is_free": True,
-                "description": "Video introduction to database concepts",
-                "order_index": 2
-            },
-            # Resources for "Basic SQL Syntax"
-            {
-                "topic_id": topic_objects[1].id,
-                "title": "SQL Tutorial",
-                "url": "https://www.w3schools.com/sql/",
-                "resource_type": ResourceType.TUTORIAL.value,
-                "is_free": True,
-                "description": "Interactive SQL tutorial from W3Schools",
-                "order_index": 1
-            },
-            {
-                "topic_id": topic_objects[1].id,
-                "title": "SQL Syntax Guide",
-                "url": "https://www.postgresql.org/docs/current/sql-syntax.html",
-                "resource_type": ResourceType.DOCUMENTATION.value,
-                "is_free": True,
-                "description": "PostgreSQL official syntax documentation",
-                "order_index": 2
-            },
-            # Resources for "SELECT Statements"
-            {
-                "topic_id": topic_objects[4].id,
-                "title": "Mastering SQL SELECT",
-                "url": "https://mode.com/sql-tutorial/sql-select-statement/",
-                "resource_type": ResourceType.TUTORIAL.value,
-                "is_free": True,
-                "description": "Comprehensive SELECT statement tutorial",
-                "order_index": 1
-            },
-            {
-                "topic_id": topic_objects[4].id,
-                "title": "SQL SELECT Examples",
-                "url": "https://www.sqlitetutorial.net/sqlite-select/",
-                "resource_type": ResourceType.ARTICLE.value,
-                "is_free": True,
-                "description": "Practical SELECT statement examples",
-                "order_index": 2
-            }
+
+        # --- React Roadmap Topics (Hierarchical) ---
+        react_topics_data = [
+            {"topic": {"title": "Build Tools", "order_index": 1, "is_required": True}, "children": [
+                {"topic": {"title": "Vite", "order_index": 1, "is_required": True}},
+                {"topic": {"title": "Create React App", "order_index": 2, "is_required": False}}
+            ]},
+            {"topic": {"title": "Core Components", "order_index": 2, "is_required": True}, "children": [
+                {"topic": {"title": "Functional Components", "order_index": 1, "is_required": True}},
+                {"topic": {"title": "JSX", "order_index": 2, "is_required": True}},
+                {"topic": {"title": "Props vs State", "order_index": 3, "is_required": True}},
+                {"topic": {"title": "Conditional Rendering", "order_index": 4, "is_required": True}},
+                {"topic": {"title": "Lists and Keys", "order_index": 5, "is_required": True}},
+                {"topic": {"title": "Component Life Cycle", "order_index": 6, "is_required": True}}
+            ]},
+            {"topic": {"title": "Hooks", "order_index": 3, "is_required": True}, "children": [
+                {"topic": {"title": "useState", "order_index": 1, "is_required": True}},
+                {"topic": {"title": "useEffect", "order_index": 2, "is_required": True}},
+                {"topic": {"title": "useContext", "order_index": 3, "is_required": True}},
+                {"topic": {"title": "useReducer", "order_index": 4, "is_required": True}},
+                {"topic": {"title": "useCallback", "order_index": 5, "is_required": True}},
+                {"topic": {"title": "useMemo", "order_index": 6, "is_required": True}},
+                {"topic": {"title": "useRef", "order_index": 7, "is_required": True}},
+                {"topic": {"title": "Custom Hooks", "order_index": 8, "is_required": True}}
+            ]},
+            {"topic": {"title": "Advanced Concepts", "order_index": 4, "is_required": True}, "children": [
+                {"topic": {"title": "Render Props", "order_index": 1, "is_required": True}},
+                {"topic": {"title": "Higher-Order Components", "order_index": 2, "is_required": True}},
+                {"topic": {"title": "Refs and the DOM", "order_index": 3, "is_required": True}}
+            ]}
         ]
-        
-        for resource_data in resources_data:
-            resource = TopicResource(**resource_data)
-            db.add(resource)
-        
+        process_topics(react_topics_data, react_roadmap.id)
         db.commit()
-        
+
+        # --- Python Roadmap Topics (Hierarchical) ---
+        python_topics_data = [
+            {"topic": {"title": "Python Basics", "order_index": 1, "is_required": True}, "children": [
+                {"topic": {"title": "Basic Syntax", "order_index": 1, "is_required": True}},
+                {"topic": {"title": "Variables and Data Types", "order_index": 2, "is_required": True}},
+                {"topic": {"title": "Conditionals", "order_index": 3, "is_required": True}},
+                {"topic": {"title": "Loops", "order_index": 4, "is_required": True}},
+                {"topic": {"title": "Functions", "order_index": 5, "is_required": True}},
+                {"topic": {"title": "Exception Handling", "order_index": 6, "is_required": True}}
+            ]},
+            {"topic": {"title": "Data Structures", "order_index": 2, "is_required": True}, "children": [
+                {"topic": {"title": "Lists", "order_index": 1, "is_required": True}},
+                {"topic": {"title": "Tuples", "order_index": 2, "is_required": True}},
+                {"topic": {"title": "Sets", "order_index": 3, "is_required": True}},
+                {"topic": {"title": "Dictionaries", "order_index": 4, "is_required": True}}
+            ]},
+            {"topic": {"title": "Advanced Python", "order_index": 3, "is_required": True}, "children": [
+                {"topic": {"title": "Decorators", "order_index": 1, "is_required": True}},
+                {"topic": {"title": "Lambdas", "order_index": 2, "is_required": True}},
+                {"topic": {"title": "Modules", "order_index": 3, "is_required": True}},
+                {"topic": {"title": "Regular Expressions", "order_index": 4, "is_required": True}}
+            ]},
+            {"topic": {"title": "Data Structures and Algorithms", "order_index": 4, "is_required": True}, "children": [
+                {"topic": {"title": "Arrays and Linked lists", "order_index": 1, "is_required": True}},
+                {"topic": {"title": "Hash Tables", "order_index": 2, "is_required": True}},
+                {"topic": {"title": "Stack, Queue, and Heap", "order_index": 3, "is_required": True}},
+                {"topic": {"title": "Binary Search Trees", "order_index": 4, "is_required": True}},
+                {"topic": {"title": "Recursion", "order_index": 5, "is_required": True}},
+                {"topic": {"title": "Sorting Algorithms", "order_index": 6, "is_required": True}}
+            ]}
+        ]
+        process_topics(python_topics_data, python_roadmap.id)
+        db.commit()
+
         print("Sample data created successfully!")
         print("Sample users created:")
-        print("- john@example.com (password: password123)")
-        print("- jane@example.com (password: password123)")
         print("- admin@example.com (password: admin123)")
+        print("- saanvigude04@gmail.com (password: SSG123)")
+        print("- rohitbinoj@gmail.com (password: RB123)")
+        print("- saishchodankar1902@gmail.com (password: SC123)")
         print("Sample roadmaps created: SQL, React, Python")
-        
+
     except Exception as e:
         print(f"Error creating sample data: {e}")
         db.rollback()

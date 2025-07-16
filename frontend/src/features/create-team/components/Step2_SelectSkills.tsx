@@ -17,7 +17,7 @@ interface Step2Props {
   updateTeamData: (data: { roadmaps: { name: string; copyDetails: boolean }[] }) => void;
 }
 
-const availableRoadmaps = ["React", "PostgreSQL", "Javascript", "Python"];
+const availableRoadmaps = ["React", "SQL", "Javascript", "Python"];
 
 const Step2_SelectSkills = ({ nextStep, prevStep, updateTeamData }: Step2Props) => {
   const { teamData } = useCreateTeamStore();
