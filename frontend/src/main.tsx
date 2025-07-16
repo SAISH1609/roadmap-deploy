@@ -15,6 +15,7 @@ const TeamMembers = lazy(() => import('./features/dashboard/components/team/Team
 const CreateTeamPage = lazy(() => import('./features/create-team/CreateTeamPage.tsx'))
 const GuidesPage = lazy(() => import('./components/ui/GuidesPage'))
 const AITutorChat = lazy(() => import('./components/ui/AITutorChat'))
+const RoadmapPage = lazy(() => import('./pages/RoadmapPage.tsx'))
 
 const router = createBrowserRouter([
   {
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <HomePage />,
+      },
+      {
+        path: 'roadmaps/:slug',
+        element: <RoadmapPage />,
       },
       {
         path: 'account',
