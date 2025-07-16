@@ -20,17 +20,13 @@ def create_team(
     db: Session = Depends(get_db)
 ):
     """Create a new team"""
-    # Create team
+    # Create team (now handles skills internally)
     team_data = team.dict()
     team_data['created_by'] = current_user.id
     db_team = crud_teams.create_team(db=db, team_data=team_data)
     
     # Add creator as admin
     crud_teams.add_team_member(db=db, team_id=db_team.id, user_id=current_user.id, role="admin")
-    
-    # Add skills if provided
-    if team.skills:
-        crud_teams.add_team_skills(db=db, team_id=db_team.id, skills=team.skills)
     
     return db_team
 

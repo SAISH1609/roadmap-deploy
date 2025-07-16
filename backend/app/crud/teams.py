@@ -5,8 +5,28 @@ from app.models.models import Team, User, TeamSkill, Skill, TeamInvitation, User
 from datetime import datetime
 
 def create_team(db: Session, team_data: dict):
+    # Extract skills from team_data to handle separately
+    skills = team_data.pop('skills', [])
+    
+    # Create team without skills
     db_team = Team(**team_data)
     db.add(db_team)
+    db.flush()  # This gives us the team ID without committing
+    
+    # Handle skills if any were provided
+    if skills:
+        for skill_name in skills:
+            # Create or get existing skill
+            skill = db.query(Skill).filter(Skill.name == skill_name).first()
+            if not skill:
+                skill = Skill(name=skill_name, is_predefined=False)
+                db.add(skill)
+                db.flush()
+            
+            # Create team-skill relationship
+            team_skill = TeamSkill(team_id=db_team.id, skill_id=skill.id)
+            db.add(team_skill)
+    
     db.commit()
     db.refresh(db_team)
     return db_team
