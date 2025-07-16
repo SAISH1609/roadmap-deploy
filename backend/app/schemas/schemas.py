@@ -229,6 +229,7 @@ class AdminTopicCreate(BaseModel):
     description: Optional[str] = None
     order_index: int
     is_required: bool = True
+    parent_id: Optional[int] = None
 
 class AdminResourceCreate(BaseModel):
     title: str
