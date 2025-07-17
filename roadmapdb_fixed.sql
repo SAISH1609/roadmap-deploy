@@ -1,3 +1,4 @@
+SET session_replication_role = replica;
 --
 -- PostgreSQL database dump
 --
@@ -652,3 +653,4 @@ SELECT pg_catalog.setval('public.users_id_seq', 4, true);
 -- PostgreSQL database dump complete
 --
 
+SET session_replication_role = DEFAULT;
