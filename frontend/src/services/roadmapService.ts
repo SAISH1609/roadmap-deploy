@@ -74,4 +74,3 @@ export const layoutElements = (topics: any[]): { nodes: Node[], edges: Edge[] } 
 
   return { nodes, edges };
 };
-

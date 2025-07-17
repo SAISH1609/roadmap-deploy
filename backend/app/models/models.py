@@ -123,8 +123,8 @@ class RoadmapTopic(Base):
     roadmap_id = Column(Integer, ForeignKey('roadmaps.id'), nullable=False)
     title = Column(String(255), nullable=False)
     description = Column(Text)
-    # position_x = Column(Integer)  # Optional for frontend positioning
-    # position_y = Column(Integer)  # Optional for frontend positioning
+    position_x = Column(Integer)  # Optional for frontend positioning
+    position_y = Column(Integer)  # Optional for frontend positioning
     parent_id = Column(Integer, ForeignKey('roadmap_topics.id'))
     order_index = Column(Integer, default=0)
     is_required = Column(Boolean, default=True)

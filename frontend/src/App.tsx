@@ -17,7 +17,7 @@ const App = () => {
           await getMe();
         } catch (error) {
           console.error("Session expired or token is invalid. Logging out.");
-          // If token is invalid (e.g., expired), logout the user
+          // If token is invalid (e.g expired), logout the user
           useAuthStore.getState().logout();
         }
       }
