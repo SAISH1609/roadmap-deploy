@@ -5,10 +5,7 @@ FROM python:3.12-slim
 WORKDIR /app
 
 # Install system dependencies required for psycopg2
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends     build-essential     libpq-dev     postgresql-client     && rm -rf /var/lib/apt/lists/*
 
 # Copy the requirements file into the container at /app
 COPY ./requirements.txt /app/requirements.txt
