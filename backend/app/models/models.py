@@ -29,6 +29,18 @@ class User(Base):
     hashed_password = Column(String(255), nullable=False)
     is_active = Column(Boolean, default=True)
     is_verified = Column(Boolean, default=False)
+    
+    # Profile fields
+    headline = Column(String(255))  
+    github_url = Column(String(500))  
+    linkedin_url = Column(String(500)) 
+    website_url = Column(String(500))
+    profile_picture = Column(String(500))  # We need to work on this, not final
+    
+    # Activity tracking
+    current_streak = Column(Integer, default=0)
+    last_activity_date = Column(DateTime(timezone=True))
+    
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
@@ -175,7 +187,7 @@ class TopicProgress(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_progress_id = Column(Integer, ForeignKey('user_progress.id'), nullable=False)
     topic_id = Column(Integer, ForeignKey('roadmap_topics.id'), nullable=False)
-    is_completed = Column(Boolean, default=False)
+    status = Column(String(20), default='not_started')  # done, in_progress, skip, not_started
     completed_at = Column(DateTime(timezone=True))
     
 

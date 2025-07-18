@@ -7,6 +7,7 @@ from app.schemas.schemas import UserProgress, ProgressSummary, TopicProgressBase
 from app.routers.auth import get_current_user
 from app.models.models import User
 from app.crud import progress as crud_progress
+from app.crud import activity as crud_activity
 
 router = APIRouter()
 
@@ -40,29 +41,19 @@ def update_topic_progress(
     db: Session = Depends(get_db)
 ):
     """Update progress for a specific topic"""
-    # Get or create user progress for roadmap
-    user_progress = crud_progress.get_user_roadmap_progress(db=db, user_id=current_user.id, roadmap_id=roadmap_id)
-    if not user_progress:
-        user_progress = crud_progress.create_user_progress(db=db, user_id=current_user.id, roadmap_id=roadmap_id)
+    try:
+        crud_activity.update_topic_progress(
+            db=db,
+            user_id=current_user.id,
+            topic_id=topic_id,
+            status=topic_progress.status
+        )
+        
+        return {
+            "message": "Topic progress updated successfully",
+            "topic_id": topic_id,
+            "status": topic_progress.status
+        }
     
-    # Update topic progress
-    crud_progress.update_topic_progress(
-        db=db, 
-        user_progress_id=user_progress.id, 
-        topic_id=topic_id, 
-        is_completed=topic_progress.is_completed
-    )
-    
-    # Update overall progress
-    crud_progress.recalculate_progress(db=db, user_progress_id=user_progress.id)
-    
-    # Log activity
-    crud_progress.log_progress_activity(
-        db=db, 
-        user_id=current_user.id, 
-        roadmap_id=roadmap_id, 
-        topic_id=topic_id, 
-        is_completed=topic_progress.is_completed
-    )
-    
-    return {"message": "Progress updated successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))

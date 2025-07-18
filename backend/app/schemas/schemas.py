@@ -7,6 +7,11 @@ class UserBase(BaseModel):
     email: EmailStr
     username: str
     full_name: Optional[str] = None
+    headline: Optional[str] = None
+    github_url: Optional[str] = None
+    linkedin_url: Optional[str] = None
+    website_url: Optional[str] = None
+    profile_picture: Optional[str] = None
 
 class UserCreate(UserBase):
     password: str
@@ -140,7 +145,7 @@ class RoadmapSummary(BaseModel):
 # Progress Schemas
 class TopicProgressBase(BaseModel):
     topic_id: int
-    is_completed: bool = False
+    status: str = "not_started"  # done, in_progress, skip, not_started
 
 class TopicProgress(TopicProgressBase):
     id: int
@@ -186,6 +191,35 @@ class UserActivity(UserActivityBase):
 
     class Config:
         from_attributes = True
+
+# Activity Dashboard Schemas
+class ActivityStats(BaseModel):
+    topics_completed: int
+    currently_learning: int
+    visit_streak: int
+
+class RoadmapProgress(BaseModel):
+    roadmap_id: int
+    roadmap_title: str
+    roadmap_slug: str
+    progress_percentage: int
+    completed_topics: int
+    total_topics: int
+    last_updated: Optional[datetime]
+
+class TopicActivityItem(BaseModel):
+    topic_id: int
+    topic_title: str
+    roadmap_title: str
+    roadmap_slug: str
+    action: str  
+    timestamp: datetime
+    status: str  
+
+class ActivityDashboard(BaseModel):
+    stats: ActivityStats
+    continue_following: List[RoadmapProgress]
+    learning_activity: List[TopicActivityItem]
 
 # Authentication Schemas
 class Token(BaseModel):

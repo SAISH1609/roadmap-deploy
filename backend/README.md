@@ -7,7 +7,8 @@ A FastAPI-based backend for a roadmap learning platform clone, featuring user au
 - **User Authentication**: JWT-based authentication with user registration and login
 - **Roadmap Management**: Interactive roadmaps with topics and resources
 - **Team Collaboration**: Create teams, invite members, track team progress
-- **Progress Tracking**: Individual and team progress on roadmaps
+- **Advanced Progress Tracking**: 3-state progress system (done, in_progress, skip)
+- **Activity Dashboard**: Comprehensive activity tracking with streaks and statistics
 - **Bookmarking**: Save favorite roadmaps
 - **Activity Feed**: Track user activities across teams
 
@@ -30,7 +31,9 @@ backend_roadmap/
 │   │   ├── users.py
 │   │   ├── roadmaps.py
 │   │   ├── teams.py
-│   │   └── progress.py
+│   │   ├── progress.py
+│   │   ├── admin.py
+│   │   └── activity.py          
 │   ├── models/
 │   │   └── models.py            # SQLAlchemy models
 │   ├── routers/                 # API endpoints
@@ -38,7 +41,9 @@ backend_roadmap/
 │   │   ├── users.py
 │   │   ├── roadmaps.py
 │   │   ├── teams.py
-│   │   └── progress.py
+│   │   ├── progress.py
+│   │   ├── admin.py
+│   │   └── activity.py          
 │   ├── schemas/
 │   │   └── schemas.py           # Pydantic models
 │   ├── services/
@@ -136,6 +141,7 @@ nano .env
 Update the `.env` file with your database credentials:
 
 The sendgrid api key insert can be skipped for now
+
 ```env
 DATABASE_URL=postgresql://your_username:your_password@localhost:5432/roadmap_db
 DATABASE_URL_TEST=postgresql://your_username:your_password@localhost:5432/roadmapdb_test
@@ -181,6 +187,15 @@ The API will be available at `http://localhost:8000`
 
 - `GET /api/users/me` - Get current user info
 - `GET /api/users/profile` - Get user profile
+- `PUT /api/users/profile` - Update user profile
+
+### Activity & Progress
+
+- `GET /api/activity/dashboard` - Get comprehensive activity dashboard
+- `GET /api/activity/stats` - Get activity statistics
+- `GET /api/activity/continue-following` - Get roadmaps to continue
+- `GET /api/activity/learning-activity` - Get recent learning activities
+- `POST /api/activity/topic-progress` - Update topic progress with 3-state system
 
 ### Roadmaps
 
@@ -207,20 +222,61 @@ The API will be available at `http://localhost:8000`
 - `GET /api/progress/{roadmap_id}` - Get roadmap progress
 - `POST /api/progress/{roadmap_id}/topics/{topic_id}` - Update topic progress
 
+### Admin
+
+- `POST /api/admin/login` - Admin login
+- `GET /api/admin/users` - Get all users
+- `GET /api/admin/roadmaps` - Get all roadmaps
+- `GET /api/admin/teams` - Get all teams
+
 ## Database Schema
 
 ### Key Tables
 
-1. **users** - User accounts and authentication
+1. **users** - User accounts, authentication, and enhanced profiles
 2. **teams** - Team information
 3. **roadmaps** - Learning roadmaps
 4. **roadmap_topics** - Topics within roadmaps
 5. **topic_resources** - Learning resources for topics
 6. **user_progress** - User progress on roadmaps
-7. **topic_progress** - Detailed topic completion status
+7. **topic_progress** - Detailed topic completion status 
 8. **team_members** - Team membership (many-to-many)
 9. **team_invitations** - Pending team invitations
-10. **user_activities** - Activity feed
+10. **user_activities** - Activity feed and tracking
+
+## Recent Updates
+
+### Enhanced Progress Tracking System
+
+The backend now features a comprehensive 3-state progress tracking system:
+
+- **done**: Topic completed
+- **in_progress**: Currently working on the topic
+- **skip**: Topic skipped by user
+- **not_started**: Default state for new topics
+
+### Activity Dashboard
+
+Complete activity tracking system with:
+
+- **Visit Streaks**: Track consecutive days of activity
+- **Progress Statistics**: Real-time calculation of completion rates
+- **Learning Activity**: Recent topic interactions
+- **Continue Following**: Smart recommendations for next learning steps
+
+### Enhanced User Profiles
+
+User profiles now support:
+
+- **Profile Pictures**: Image upload and storage
+- **Professional Info**: Headline, GitHub, LinkedIn, and website URLs
+- **Activity Tracking**: Current streak and last activity timestamps
+
+### Database Schema Updates
+
+- `users` table enhanced with profile fields and activity tracking
+- `topic_progress` migrated from boolean `is_completed` to string `status`
+- All existing data automatically migrated to new schema
 
 ## Development Tasks for Database Team
 
@@ -235,6 +291,7 @@ The API will be available at `http://localhost:8000`
 
 Create SQL scripts or Python scripts to populate:
 **NOTE: Running create_sample_data.py will first delete existing data from your DB, before running and inserting data. To run successfully, and avoid duplication**
+
 1. **Predefined Skills**:
 
 ```sql
@@ -359,6 +416,20 @@ curl -X POST "http://localhost:8000/api/admin/login" \
 
 # Get roadmaps
 curl http://localhost:8000/api/roadmaps/
+
+# Get activity dashboard
+curl -X GET "http://localhost:8000/api/activity/dashboard" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+
+# Update topic progress
+curl -X POST "http://localhost:8000/api/activity/topic-progress" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{"topic_id": 1, "status": "done"}'
+
+# Update user profile with new fields
+curl -X PUT "http://localhost:8000/api/users/profile" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{"headline": "Full Stack Developer", "github_url": "https://github.com/username", "profile_picture": "https://example.com/profile.jpg"}'
 ```
-
-
