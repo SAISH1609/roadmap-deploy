@@ -24,8 +24,8 @@ type AuthState = {
 };
 
 // Create the store with persistence middleware
-export const useAuthStore = create(
-  persist<AuthState>(
+export const useAuthStore = create<AuthState>()(
+  persist(
     (set) => ({
       token: null,
       user: null,
@@ -33,8 +33,9 @@ export const useAuthStore = create(
       setToken: (token) => {
         set({ token, isAuthenticated: !!token });
       },
+      // This setUser logic is correct!
       setUser: (user) => {
-        set({ user });
+        set({ user, isAuthenticated: !!user });
       },
       logout: () => {
         set({ token: null, user: null, isAuthenticated: false });
