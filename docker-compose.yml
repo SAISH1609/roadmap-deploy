@@ -1,14 +1,31 @@
 services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_URL=http://backend:8000/api
+
   backend:
     build: ./backend
     command: >
       sh -c "
         echo 'Waiting for database to be ready...' &&
         python manage_db.py check-connection &&
-        echo 'Creating tables...' &&
+        echo 'Checking and creating tables if needed...' &&
         python manage_db.py create-tables &&
-        echo 'Loading data from roadmapdb_fixed.sql...' &&
-        psql "$$DATABASE_URL" -f /app/../roadmapdb_fixed.sql &&
+        echo 'Checking if data already exists...' &&
+        if ! python manage_db.py check-data-exists | grep -q 'Found 0 records'; then
+          echo 'Data already exists, skipping SQL import'
+        else
+          echo 'Loading data from roadmapdb_fixed.sql...' &&
+          psql \"$$DATABASE_URL\" -f /app/../roadmapdb_fixed.sql
+        fi &&
         echo 'Starting application...' &&
         uvicorn main:app --host 0.0.0.0 --port 8000 --reload
       "
@@ -24,7 +41,7 @@ services:
         condition: service_healthy
 
   db:
-    image: postgres:15-alpine
+    image: postgres:15-alpine # Official Postgres image
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:

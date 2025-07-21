@@ -2,7 +2,13 @@ import axios from 'axios';
 import { useAuthStore } from '../store/authStore';
 
 const apiClient = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api',
+   //baseURL: 'http://127.0.0.1:8000/api',
+   //  # Frontend container tries to call:
+   //http://127.0.0.1:8000/api
+   // But 127.0.0.1 inside frontend container = frontend container itself
+   // Result: "Connection refused" or "Network error"
+   // Frontend can't communicate with backend
+  baseURL: import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api',
   headers: {
     'Content-Type': 'application/json',
   },
