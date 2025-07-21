@@ -77,7 +77,7 @@ export const TopicDrawer = ({ topic, roadmapId, isOpen, onOpenChange }: TopicDra
 
   if (!topic) return null;
 
-  const isCompleted = progress[topic.id] || false;
+  const currentStatus = progress[topic.id] || "not_started";
   const freeResources = topic.resources.filter(r => r.is_free);
   const premiumResources = topic.resources.filter(r => !r.is_free);
 
@@ -93,7 +93,7 @@ export const TopicDrawer = ({ topic, roadmapId, isOpen, onOpenChange }: TopicDra
               <TopicStatusDropdown
                 roadmapId={roadmapId}
                 topicId={topic.id}
-                isCompleted={isCompleted}
+                currentStatus={currentStatus}
               />
             </div>
             <SheetDescription className="text-base text-gray-600 dark:text-gray-400 pt-4">

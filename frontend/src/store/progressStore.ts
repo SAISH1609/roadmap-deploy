@@ -2,13 +2,13 @@ import { create } from 'zustand';
 import apiClient from '../services/apiClient';
 
 type ProgressData = {
-  [topicId: number]: boolean; // topicId -> is_completed
+  [topicId: number]: string; // topicId -> status
 };
 
 type ProgressState = {
   progress: ProgressData;
   fetchProgressForRoadmap: (roadmapId: number) => Promise<void>;
-  updateTopicStatus: (roadmapId: number, topicId: number, isCompleted: boolean) => Promise<void>;
+  updateTopicStatus: (roadmapId: number, topicId: number, status: string) => Promise<void>;
 };
 
 export const useProgressStore = create<ProgressState>((set, get) => ({
@@ -19,8 +19,8 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
     try {
       const response = await apiClient.get(`/progress/${roadmapId}`);
       const newProgress = { ...get().progress };
-      response.data.topic_progress.forEach((p: { topic_id: number; is_completed: boolean }) => {
-        newProgress[p.topic_id] = p.is_completed;
+      response.data.topic_progress.forEach((p: { topic_id: number; status: string }) => {
+        newProgress[p.topic_id] = p.status;
       });
       set({ progress: newProgress });
     } catch (error) {
@@ -30,7 +30,7 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
       const initialProgress = { ...get().progress };
       data.topics.forEach((topic: { id: number }) => {
         if (initialProgress[topic.id] === undefined) {
-          initialProgress[topic.id] = false;
+          initialProgress[topic.id] = "not_started";
         }
       });
       set({ progress: initialProgress });
@@ -38,12 +38,13 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
   },
 
   // Action to update a topic's status on the frontend and backend
-  updateTopicStatus: async (roadmapId, topicId, isCompleted) => {
+  updateTopicStatus: async (roadmapId, topicId, status) => {
+    const oldStatus = get().progress[topicId] || "not_started";
     // Optimistically update the UI
     set((state) => ({
       progress: {
         ...state.progress,
-        [topicId]: isCompleted,
+        [topicId]: status,
       },
     }));
 
@@ -51,7 +52,7 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
     try {
       await apiClient.post(`/progress/${roadmapId}/topics/${topicId}`, {
         topic_id: topicId,
-        is_completed: isCompleted,
+        status: status,
       });
     } catch (error) {
       console.error("Failed to update topic status:", error);
@@ -59,7 +60,7 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
       set((state) => ({
         progress: {
           ...state.progress,
-          [topicId]: !isCompleted,
+          [topicId]: oldStatus,
         },
       }));
     }

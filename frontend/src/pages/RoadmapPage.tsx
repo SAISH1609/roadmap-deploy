@@ -51,7 +51,7 @@ const RoadmapPage = () => {
         data: {
           ...node.data,
           // Pass completion status to the node data
-          is_completed: progress[Number(node.id)] || false,
+          status: progress[Number(node.id)] || 'not_started',
         },
       }));
       
