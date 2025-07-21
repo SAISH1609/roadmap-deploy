@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, useLocation } from "react-router";
+import { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,12 +10,29 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { ChevronsUpDown, User, Users } from "lucide-react";
+import { useAuthStore } from "@/store/authStore";
+import { useTeamStore } from "@/store/teamStore";
 
 const Sidebar = () => {
   const [selectedTeam, setSelectedTeam] = useState("Personal");
-  const teams = ["Team A", "Team B", "Team C"];
-  const currentUser = "Srideep";
+  const { user } = useAuthStore();
+  const { teams, fetchTeams } = useTeamStore();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchTeams();
+  }, [fetchTeams]);
+
+  const handleTeamSelect = (teamName: string) => {
+    setSelectedTeam(teamName);
+    navigate('/account/team/activity');
+  };
+
+  const handlePersonalSelect = () => {
+    setSelectedTeam("Personal");
+    navigate('/account');
+  };
 
   const personalNavItems = [
     { href: "/account", label: "Activity" },
@@ -38,22 +55,22 @@ const Sidebar = () => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="w-full justify-between mt-1">
-              <span>{selectedTeam === "Personal" ? currentUser : selectedTeam}</span>
+              <span>{selectedTeam === "Personal" ? user?.full_name : selectedTeam}</span>
               <ChevronsUpDown className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56">
             <DropdownMenuLabel>Personal Account</DropdownMenuLabel>
-            <DropdownMenuItem onSelect={() => setSelectedTeam("Personal")}>
+            <DropdownMenuItem onSelect={handlePersonalSelect}>
               <User className="mr-2 h-4 w-4" />
-              <span>{currentUser}</span>
+              <span>{user?.full_name}</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuLabel>Teams</DropdownMenuLabel>
             {teams.map((team) => (
-              <DropdownMenuItem key={team} onSelect={() => setSelectedTeam(team)}>
+              <DropdownMenuItem key={team.id} onSelect={() => handleTeamSelect(team.name)}>
                 <Users className="mr-2 h-4 w-4" />
-                <span>{team}</span>
+                <span>{team.name}</span>
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>
@@ -80,4 +97,3 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
-
