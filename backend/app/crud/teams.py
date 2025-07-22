@@ -44,6 +44,16 @@ def add_team_member(db: Session, team_id: int, user_id: int, role: str = "member
         db.add(membership)
         db.commit()
 
+def remove_team_member(db: Session, team_id: int, user_id: int):
+    membership = db.query(TeamMembership).filter(
+        and_(TeamMembership.team_id == team_id, TeamMembership.user_id == user_id)
+    ).first()
+    if membership:
+        db.delete(membership)
+        db.commit()
+        return True
+    return False
+
 def is_team_member(db: Session, team_id: int, user_id: int) -> bool:
     result = db.query(TeamMembership).filter(
         and_(TeamMembership.team_id == team_id, TeamMembership.user_id == user_id)

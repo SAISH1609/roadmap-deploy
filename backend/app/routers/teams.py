@@ -163,6 +163,40 @@ def get_team_members(
     
     return crud_teams.get_team_members(db=db, team_id=team_id)
 
+@router.delete("/{team_id}/leave", status_code=status.HTTP_204_NO_CONTENT)
+def leave_team(
+    team_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Leave a team"""
+    if not crud_teams.is_team_member(db=db, team_id=team_id, user_id=current_user.id):
+        raise HTTPException(status_code=403, detail="You are not a member of this team")
+    
+    crud_teams.remove_team_member(db=db, team_id=team_id, user_id=current_user.id)
+    return
+
+@router.delete("/{team_id}/members/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+def remove_team_member(
+    team_id: int,
+    user_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Remove a member from the team (admin only)"""
+    user_role = crud_teams.get_user_role_in_team(db=db, team_id=team_id, user_id=current_user.id)
+    if user_role not in ["admin"]:
+        raise HTTPException(status_code=403, detail="Not authorized to remove members")
+        
+    if current_user.id == user_id:
+        raise HTTPException(status_code=400, detail="Admin cannot remove themselves, use the leave team endpoint")
+
+    if not crud_teams.is_team_member(db=db, team_id=team_id, user_id=user_id):
+        raise HTTPException(status_code=404, detail="User is not a member of this team")
+
+    crud_teams.remove_team_member(db=db, team_id=team_id, user_id=user_id)
+    return
+
 @router.get("/{team_id}/activity", response_model=List[UserActivityWithUser])
 def get_team_activity(
     team_id: int,
