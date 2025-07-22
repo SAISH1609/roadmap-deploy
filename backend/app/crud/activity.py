@@ -176,10 +176,21 @@ def get_continue_following(db: Session, user_id: int) -> List[RoadmapProgress]:
             UserProgress.progress_percentage > 0,
             UserProgress.progress_percentage < 100
         )
-    ).order_by(desc(UserProgress.last_updated)).limit(10).all()
+    ).order_by(desc(UserProgress.last_updated)).all()
+
+    # --- Deduplication Logic ---
+    # Use a dictionary to store the most recent progress for each roadmap title
+    latest_progress = {}
+    for up in user_progress_list:
+        # If we haven't seen this title, or if the current one is more recent, update it
+        if up.roadmap.title not in latest_progress or up.last_updated > latest_progress[up.roadmap.title].last_updated:
+            latest_progress[up.roadmap.title] = up
+
+    # Convert the dictionary values back to a list and limit to 10
+    deduplicated_list = list(latest_progress.values())[:10]
     
     result = []
-    for up in user_progress_list:
+    for up in deduplicated_list:
         result.append(RoadmapProgress(
             roadmap_id=up.roadmap_id,
             roadmap_title=up.roadmap.title,

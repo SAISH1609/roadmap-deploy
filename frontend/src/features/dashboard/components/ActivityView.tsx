@@ -71,7 +71,7 @@ const ActivityView = () => {
         <h2 className="text-2xl font-bold mb-4">Continue Following</h2>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {roadmaps.map((roadmap) => (
-            <Link to={`/roadmaps/${roadmap.slug}`} key={roadmap.title} className="hover:scale-105 transition-transform duration-200">
+            <Link to={`/roadmaps/${roadmap.slug}`} key={`${roadmap.slug}-${roadmap.title}`} className="hover:scale-105 transition-transform duration-200">
               <Card className="text-gray-900 dark:text-gray-100">
                 <CardHeader>
                   <CardTitle>{roadmap.title}</CardTitle>

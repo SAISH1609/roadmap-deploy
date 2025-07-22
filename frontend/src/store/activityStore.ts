@@ -1,11 +1,40 @@
 import { create } from 'zustand';
+import apiClient from '../services/apiClient';
+import { formatDistanceToNow } from 'date-fns';
 
-// --- Type Definitions ---
+// --- Type Definitions for what the backend returns ---
+interface BackendActivityStats {
+  topics_completed: number;
+  currently_learning: number;
+  visit_streak: number;
+}
+
+interface BackendRoadmapProgress {
+  roadmap_title: string;
+  roadmap_slug: string;
+  progress_percentage: number;
+}
+
+interface BackendLearningActivity {
+  action: 'started' | 'completed' | 'done' | 'in_progress' | 'skip';
+  topic_title: string;
+  roadmap_slug: string;
+  timestamp: string;
+}
+
+interface BackendActivityDashboard {
+  stats: BackendActivityStats;
+  continue_following: BackendRoadmapProgress[];
+  learning_activity: BackendLearningActivity[];
+}
+
+
+// --- Type Definitions for what the frontend components expect ---
 interface Stat {
   title: string;
   value: string | number;
   icon: 'check' | 'book' | 'clock';
-  link?: string; // <-- Optional link for stat cards
+  link?: string;
 }
 
 interface Roadmap {
@@ -17,7 +46,7 @@ interface Roadmap {
 interface LearningActivity {
   action: 'started' | 'completed';
   topic: string;
-  topicSlug: string; // <-- Added slug for linking to the topic
+  topicSlug: string;
   date: string;
 }
 
@@ -30,6 +59,17 @@ interface ActivityState {
   fetchDashboardData: () => Promise<void>;
 }
 
+// --- Helper function to format date ---
+const formatRelativeDate = (dateString: string) => {
+  try {
+    const date = new Date(dateString);
+    return formatDistanceToNow(date, { addSuffix: true });
+  } catch (error) {
+    console.error("Invalid date format:", dateString);
+    return "a long time ago";
+  }
+};
+
 // --- Create the Zustand Store ---
 export const useactivityStore = create<ActivityState>((set) => ({
   // Initial state
@@ -39,36 +79,51 @@ export const useactivityStore = create<ActivityState>((set) => ({
   loading: true,
   error: null,
 
-  // The function to fetch (or re-fetch) data
+  // The function to fetch data from the backend
   fetchDashboardData: async () => {
     set({ loading: true, error: null });
     try {
-      // --- MOCK API CALL ---
-      const data = await new Promise<{ stats: Stat[], roadmaps: Roadmap[], learningActivity: LearningActivity[] }>((resolve) => {
-        setTimeout(() => {
-          const mockStats: Stat[] = [
-            { title: "Topics Completed", value: Math.floor(Math.random() * 20) + 1, icon: 'check', link: '/account/completed' },
-            { title: "Topics Learning", value: Math.floor(Math.random() * 5) + 1, icon: 'book', link: '/account/learning' },
-            { title: "Visit Streak", value: `${Math.floor(Math.random() * 10) + 1} days`, icon: 'clock' },
-          ];
-          const mockRoadmaps: Roadmap[] = [
-            { title: "Frontend", slug: "frontend", progress: 75 },
-            { title: "React", slug: "react", progress: 50 },
-            { title: "Full Stack", slug: "full-stack", progress: 25 },
-          ];
-          const mockLearningActivity: LearningActivity[] = [
-            { action: "started", topic: "CSS Basics", topicSlug: "css", date: "2 days ago" },
-            { action: "completed", topic: "HTML Fundamentals", topicSlug: "html", date: "3 days ago" },
-            { action: "started", topic: "JavaScript for Beginners", topicSlug: "javascript", date: "4 days ago" },
-          ];
-          resolve({ stats: mockStats, roadmaps: mockRoadmaps, learningActivity: mockLearningActivity });
-        }, 500);
-      });
+      const response = await apiClient.get<BackendActivityDashboard>('/activity/dashboard');
+      const data = response.data;
+
+      // --- Transform backend data to frontend format ---
+      const transformedStats: Stat[] = [
+        {
+          title: "Topics Completed",
+          value: data.stats.topics_completed,
+          icon: 'check',
+          link: '/account/completed'
+        },
+        {
+          title: "Topics Learning",
+          value: data.stats.currently_learning,
+          icon: 'book',
+          link: '/account/learning'
+        },
+        {
+          title: "Visit Streak",
+          value: `${data.stats.visit_streak} days`,
+          icon: 'clock'
+        },
+      ];
+
+      const transformedRoadmaps: Roadmap[] = data.continue_following.map(r => ({
+        title: r.roadmap_title,
+        slug: r.roadmap_slug,
+        progress: r.progress_percentage,
+      }));
+
+      const transformedLearningActivity: LearningActivity[] = data.learning_activity.map(a => ({
+        action: a.action === 'done' || a.action === 'completed' ? 'completed' : 'started',
+        topic: a.topic_title,
+        topicSlug: a.roadmap_slug, // The backend gives roadmap slug, good enough for linking
+        date: formatRelativeDate(a.timestamp),
+      }));
 
       set({
-        stats: data.stats,
-        roadmaps: data.roadmaps,
-        learningActivity: data.learningActivity,
+        stats: transformedStats,
+        roadmaps: transformedRoadmaps,
+        learningActivity: transformedLearningActivity,
         loading: false,
       });
 
