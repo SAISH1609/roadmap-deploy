@@ -13,12 +13,44 @@ from app.services.email_service import send_team_invitation_email
 
 router = APIRouter()
 
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
+from sqlalchemy.orm import Session
+from typing import List
+import secrets
+from datetime import datetime, timedelta, timezone
+
+from app.database import get_db
+from app.schemas.schemas import Team, TeamCreate, TeamInvite, TeamMember, TeamInvitation, UserActivityWithUser, RoadmapSummary
+from app.routers.auth import get_current_user
+from app.models.models import User
+from app.crud import teams as crud_teams
+from app.services.email_service import send_team_invitation_email
+
+router = APIRouter()
+
 @router.post("/", response_model=Team, status_code=status.HTTP_201_CREATED)
-def create_team(team: TeamCreate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def create_team(team: TeamCreate, background_tasks: BackgroundTasks, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     team_data = team.dict()
+    member_emails = team_data.pop('members', [])
     team_data['created_by'] = current_user.id
+    
     db_team = crud_teams.create_team(db=db, team_data=team_data)
     crud_teams.add_team_member(db=db, team_id=db_team.id, user_id=current_user.id, role="admin")
+
+    for email in member_emails:
+        token = secrets.token_urlsafe(32)
+        expires_at = datetime.utcnow() + timedelta(days=7)
+        invitation_data = {
+            "team_id": db_team.id, 
+            "email": email, 
+            "role": "member", 
+            "token": token, 
+            "invited_by": current_user.id, 
+            "expires_at": expires_at
+        }
+        crud_teams.create_invitation(db=db, invitation_data=invitation_data)
+        background_tasks.add_task(send_team_invitation_email, email, db_team.name, token)
+
     return db_team
 
 @router.get("/", response_model=List[Team])

@@ -1,25 +1,21 @@
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import and_
 from typing import List, Optional
-from app.models.models import Team, User, TeamSkill, Skill, TeamInvitation, UserActivity, TeamMembership, Roadmap, UserProgress
+from app.models.models import Team, User, TeamSkill, Skill, TeamInvitation, UserActivity, TeamMembership, Roadmap, UserProgress, team_roadmaps
 from app.crud.roadmaps import is_roadmap_bookmarked
 from datetime import datetime, timedelta
 import secrets
 
 def create_team(db: Session, team_data: dict):
-    skills = team_data.pop('skills', [])
+    roadmap_ids = team_data.pop('roadmap_ids', [])
+    team_data.pop('members', [])  # Remove members, handled in router
     db_team = Team(**team_data)
     db.add(db_team)
     db.flush()
-    if skills:
-        for skill_name in skills:
-            skill = db.query(Skill).filter(Skill.name == skill_name).first()
-            if not skill:
-                skill = Skill(name=skill_name, is_predefined=False)
-                db.add(skill)
-                db.flush()
-            team_skill = TeamSkill(team_id=db_team.id, skill_id=skill.id)
-            db.add(team_skill)
+    if roadmap_ids:
+        for roadmap_id in roadmap_ids:
+            stmt = team_roadmaps.insert().values(team_id=db_team.id, roadmap_id=roadmap_id)
+            db.execute(stmt)
     db.commit()
     db.refresh(db_team)
     return db_team

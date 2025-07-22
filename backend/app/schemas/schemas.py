@@ -36,7 +36,8 @@ class TeamBase(BaseModel):
     github_org_link: Optional[str] = None
 
 class TeamCreate(TeamBase):
-    skills: Optional[List[str]] = []
+    roadmap_ids: Optional[List[int]] = []
+    members: Optional[List[EmailStr]] = []
 
 class TeamInvite(BaseModel):
     email: EmailStr

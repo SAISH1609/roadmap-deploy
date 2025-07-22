@@ -49,3 +49,8 @@ export const cancelInvitation = async (teamId: string, invitationId: number) => 
   const response = await apiClient.delete(`/teams/${teamId}/invitations/${invitationId}`);
   return response.data;
 };
+
+export const createTeam = async (teamData: { name: string; description?: string; roadmap_ids?: number[], members?: string[] }) => {
+    const response = await apiClient.post('/teams/', teamData);
+    return response.data;
+  };

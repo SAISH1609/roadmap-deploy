@@ -2,6 +2,11 @@ import apiClient from './apiClient';
 import dagre from 'dagre';
 import type { Node, Edge } from 'reactflow';
 
+export const getRoadmaps = async () => {
+  const response = await apiClient.get('/roadmaps/');
+  return response.data;
+};
+
 export const getRoadmapBySlug = async (slug: string) => {
   const response = await apiClient.get(`/roadmaps/${slug}`);
   return response.data;
