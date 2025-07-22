@@ -27,29 +27,29 @@ const ActivityView = () => {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-8">Activity</h1>
+      <h1 className="text-3xl font-bold mb-8 text-black">Activity</h1>
 
       <div className="grid gap-4 md:grid-cols-3 mb-8">
         {stats.map((stat) => (
           <Card key={stat.title}>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
+              <CardTitle className="text-sm font-medium text-black">{stat.title}</CardTitle>
               {stat.icon}
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
+              <div className="text-2xl font-bold text-black">{stat.value}</div>
             </CardContent>
           </Card>
         ))}
       </div>
 
       <div className="mb-8">
-        <h2 className="text-2xl font-bold mb-4">Continue Following</h2>
+        <h2 className="text-2xl font-bold mb-4 text-black">Continue Following</h2>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {roadmaps.map((roadmap) => (
             <Card key={roadmap.title}>
               <CardHeader>
-                <CardTitle>{roadmap.title}</CardTitle>
+                <CardTitle className="text-black">{roadmap.title}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
@@ -58,7 +58,7 @@ const ActivityView = () => {
                     style={{ width: `${roadmap.progress}%` }}
                   ></div>
                 </div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">{roadmap.progress}% complete</p>
+                <p className="text-sm text-black mt-2">{roadmap.progress}% complete</p>
               </CardContent>
             </Card>
           ))}
@@ -66,7 +66,7 @@ const ActivityView = () => {
       </div>
 
       <div>
-        <h2 className="text-2xl font-bold mb-4">Learning Activity</h2>
+        <h2 className="text-2xl font-bold mb-4 text-black">Learning Activity</h2>
         <Card>
           <CardContent className="p-6">
             <ul className="space-y-4">
@@ -80,10 +80,10 @@ const ActivityView = () => {
                     )}
                   </div>
                   <div>
-                    <p className="font-semibold">
+                    <p className="font-semibold text-black">
                       You {activity.action} the topic: {activity.topic}
                     </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{activity.date}</p>
+                    <p className="text-sm text-black">{activity.date}</p>
                   </div>
                 </li>
               ))}
