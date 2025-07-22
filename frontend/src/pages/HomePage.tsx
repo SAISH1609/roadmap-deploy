@@ -1,24 +1,46 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
-import { Card } from '../components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import GuidesPage from '../components/ui/GuidesPage';
 import VideosSection from '../components/ui/VideosSection';
+import { useTeamStore, type Team } from '../store/teamStore';
+import { useactivityStore } from '../store/activityStore';
 
 const HomePage = () => {
   const [selectedTab, setSelectedTab] = useState('personal');
   const navigate = useNavigate();
+  const { teams, fetchTeams, setSelectedTeam } = useTeamStore();
+  const {
+    stats,
+    topicsCompletedToday,
+    roadmaps,
+    fetchDashboardData,
+    fetchTopicsCompletedToday,
+  } = useactivityStore();
+
+  useEffect(() => {
+    fetchTeams();
+    fetchDashboardData();
+    fetchTopicsCompletedToday();
+  }, [fetchTeams, fetchDashboardData, fetchTopicsCompletedToday]);
 
   const handleProfileSetupClick = () => {
     navigate('/account/profile');
   };
 
+  const handleTeamClick = (team: Team) => {
+    setSelectedTeam(team);
+    navigate('/account/team/activity');
+  };
+
   const skillRoadmaps = [
     { name: 'React', slug: 'react', description: 'Build modern user interfaces with React.' },
-    { name: 'Javascript', slug: 'javascript', description: 'Master the language of the web.' },
     { name: 'SQL', slug: 'sql', description: 'Learn relational database management.' },
     { name: 'Python', slug: 'python', description: 'Explore Python for web development, data science, and more.' },
   ];
+
+  const visitStreakStat = stats.find(stat => stat.title === 'Visit Streak');
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-blue-950 via-black to-black">
@@ -32,19 +54,18 @@ const HomePage = () => {
           >
             Personal
           </Button>
-          {/* Placeholder for actual teams */}
-          <Button
-            variant={selectedTab === 'team1' ? 'default' : 'ghost'}
-            onClick={() => setSelectedTab('team1')}
-          >
-            Team Alpha
-          </Button>
-          <Button
-            variant={selectedTab === 'team2' ? 'default' : 'ghost'}
-            onClick={() => setSelectedTab('team2')}
-          >
-            Team Beta
-          </Button>
+          {teams.map((team) => (
+            <Button
+              key={team.id}
+              variant={selectedTab === `team-${team.id}` ? 'default' : 'ghost'}
+              onClick={() => {
+                setSelectedTab(`team-${team.id}`);
+                handleTeamClick(team);
+              }}
+            >
+              {team.name}
+            </Button>
+          ))}
         </div>
 
         {/* Content based on selected tab */}
@@ -57,20 +78,42 @@ const HomePage = () => {
                 <p className="text-sm text-gray-500">Complete your profile to get started.</p>
               </Card>
               <Card className="p-4 text-center">
-                <h2 className="text-lg font-semibold">0 Days Streak</h2>
+                <h2 className="text-lg font-semibold">{visitStreakStat ? visitStreakStat.value : '0 days'}</h2>
                 <p className="text-sm text-gray-500">Keep learning every day!</p>
               </Card>
               <Card className="p-4 text-center">
-                <h2 className="text-lg font-semibold">0 Learnt Today</h2>
+                <h2 className="text-lg font-semibold">{topicsCompletedToday} Learnt Today</h2>
                 <p className="text-sm text-gray-500">Start a roadmap to learn something new.</p>
               </Card>
             </div>
 
             {/* Ongoing Roadmap Choice */}
             <Card className="p-6">
-              <h2 className="text-xl font-bold mb-4">Your Ongoing Roadmap</h2>
-              <p className="text-gray-600">No ongoing roadmap. Choose one below to start your learning journey!</p>
-              {/* Placeholder for actual roadmap content */}
+              <h2 className="text-xl font-bold mb-4">Your Ongoing Roadmaps</h2>
+              {roadmaps && roadmaps.length > 0 ? (
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {roadmaps.map((roadmap) => (
+                    <Link to={`/roadmaps/${roadmap.slug}`} key={`${roadmap.slug}-${roadmap.title}`} className="no-underline">
+                      <Card className="text-gray-900 dark:text-gray-100 h-full hover:bg-gray-800 transition-colors">
+                        <CardHeader>
+                          <CardTitle>{roadmap.title}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                            <div
+                              className="bg-blue-600 h-2.5 rounded-full"
+                              style={{ width: `${roadmap.progress}%` }}
+                            ></div>
+                          </div>
+                          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">{roadmap.progress}% complete</p>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-600">No ongoing roadmap. Choose one below to start your learning journey!</p>
+              )}
             </Card>
 
             {/* Various Skill Roadmaps */}
@@ -104,9 +147,9 @@ const HomePage = () => {
         )}
 
         {/* Placeholder for Team content */}
-        {selectedTab !== 'personal' && (
+        {selectedTab.startsWith('team-') && (
           <div className="p-6 text-center text-gray-500">
-            Content for {selectedTab === 'team1' ? 'Team Alpha' : 'Team Beta'} will be displayed here.
+            Navigating to team page...
           </div>
         )}
       </div>

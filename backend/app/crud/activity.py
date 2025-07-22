@@ -238,3 +238,18 @@ def get_activity_dashboard(db: Session, user_id: int) -> ActivityDashboard:
         continue_following=continue_following,
         learning_activity=learning_activity
     )
+
+def get_completed_today_count(db: Session, user_id: int) -> int:
+    today_start = datetime.utcnow().date()
+    today_end = today_start + timedelta(days=1)
+    
+    count = db.query(TopicProgress).join(UserProgress).filter(
+        and_(
+            UserProgress.user_id == user_id,
+            TopicProgress.status == 'done',
+            TopicProgress.completed_at >= today_start,
+            TopicProgress.completed_at < today_end
+        )
+    ).count()
+    
+    return count

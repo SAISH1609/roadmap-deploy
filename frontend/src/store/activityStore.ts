@@ -61,9 +61,11 @@ interface ActivityState {
   learningActivity: LearningActivity[];
   loading: boolean;
   error: string | null;
-  activityFilter: ActivityFilter; // <-- Add filter state
+  activityFilter: ActivityFilter;
+  topicsCompletedToday: number; // <-- Add new state
   fetchDashboardData: () => Promise<void>;
-  setActivityFilter: (filter: ActivityFilter) => void; // <-- Add action to set filter
+  setActivityFilter: (filter: ActivityFilter) => void;
+  fetchTopicsCompletedToday: () => Promise<void>; // <-- Add new action
 }
 
 // --- Helper function to format date ---
@@ -85,10 +87,22 @@ export const useactivityStore = create<ActivityState>((set) => ({
   learningActivity: [],
   loading: true,
   error: null,
-  activityFilter: 'all', // <-- Default filter
+  activityFilter: 'all',
+  topicsCompletedToday: 0, // <-- Initialize
 
   // Action to set the filter
   setActivityFilter: (filter: ActivityFilter) => set({ activityFilter: filter }),
+
+  // Action to fetch topics completed today
+  fetchTopicsCompletedToday: async () => {
+    try {
+      const response = await apiClient.get<number>('/activity/today-completed-count');
+      set({ topicsCompletedToday: response.data });
+    } catch (err) {
+      console.error("Failed to fetch topics completed today:", err);
+      // Optionally set an error state here
+    }
+  },
 
   // The function to fetch data from the backend
   fetchDashboardData: async () => {

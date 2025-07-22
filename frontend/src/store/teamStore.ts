@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { getTeams, getTeamActivity } from '../services/teamService';
 
-type Team = {
+export type Team = {
   id: number;
   name: string;
 };

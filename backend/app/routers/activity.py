@@ -65,3 +65,10 @@ def get_learning_activity(
     db: Session = Depends(get_db)
 ):
     return crud_activity.get_learning_activity(db, current_user.id, limit)
+
+@router.get("/today-completed-count", response_model=int)
+def get_today_completed_count(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    return crud_activity.get_completed_today_count(db, current_user.id)
