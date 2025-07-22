@@ -8,10 +8,16 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Pencil, Save, X, Upload } from "lucide-react";
 
 const Profile = () => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const { user, setUser } = useAuthStore();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    username: "",
     headline: "",
     github: "",
     twitter: "",
@@ -21,57 +27,50 @@ const Profile = () => {
     availableForHire: false,
     profilePicture: ""
   });
-  const [isEditing, setIsEditing] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // 3. On component load, copy user into formData
-  useEffect(() => {
-    if (user) {
-      setFormData({
-        name: user.full_name || user.name || "",
-        email: user.email || "",
-        headline: user.headline || "",
-        github: user.github_url || "",
-        twitter: user.twitter_url || "",
-        linkedin: user.linkedin_url || "",
-        dailydev: user.dailydev_url || "",
-        website: user.website || "",
-        availableForHire: user.availableForHire || false,
-        profilePicture: user.profilePicture || ""
-      });
+  const handleInputChange = (field: string, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleEditProfilePicture = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
     }
-  }, [user]);
-
-  // 4. Controlled input change handler
-  const handleInputChange = (field: string, value: string | boolean) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
   };
 
   const handleProfilePictureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
-        setFormData(prev => ({
-          ...prev,
-          profilePicture: result
-        }));
+      reader.onloadend = () => {
+        setFormData(prev => ({ ...prev, profilePicture: reader.result as string }));
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleEditProfilePicture = () => {
-    fileInputRef.current?.click();
-  };
+// ...
 
-  // 5, 6, 7, 8. Save Profile logic
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.full_name || "",
+        email: user.email || "",
+        username: user.username || "",
+        headline: user.headline || "",
+        github: user.github_url || "",
+        twitter: user.twitter_url || "",
+        linkedin: user.linkedin_url || "",
+        dailydev: user.dailydev_url || "",
+        website: user.website_url || "",
+        availableForHire: user.availableForHire || false,
+        profilePicture: user.profile_picture || ""
+      });
+    }
+  }, [user]);
+
+// ...
+
   const handleSaveProfile = async () => {
     setSaving(true);
     setError(null);
@@ -92,16 +91,17 @@ const Profile = () => {
     // Reset form to last loaded user data
     if (user) {
       setFormData({
-        name: user.full_name || user.name || "",
+        name: user.full_name || "",
         email: user.email || "",
+        username: user.username || "",
         headline: user.headline || "",
         github: user.github_url || "",
         twitter: user.twitter_url || "",
         linkedin: user.linkedin_url || "",
         dailydev: user.dailydev_url || "",
-        website: user.website || "",
+        website: user.website_url || "",
         availableForHire: user.availableForHire || false,
-        profilePicture: user.profilePicture || ""
+        profilePicture: user.profile_picture || ""
       });
     }
     setIsEditing(false);
@@ -193,6 +193,20 @@ const Profile = () => {
                 onChange={e => handleInputChange("name", e.target.value)}
                 className="w-full border-gray-300 bg-white focus:border-blue-500 focus:ring-blue-500"
                 placeholder="Enter your full name"
+                disabled={!isEditing}
+              />
+            </div>
+            <div>
+              <Label htmlFor="username" className="text-sm font-medium text-blue-600 mb-2 block">
+                Username*
+              </Label>
+              <Input
+                type="text"
+                id="username"
+                value={formData.username}
+                onChange={e => handleInputChange("username", e.target.value)}
+                className="w-full border-gray-300 bg-white focus:border-blue-500 focus:ring-blue-500"
+                placeholder="Enter your username"
                 disabled={!isEditing}
               />
             </div>

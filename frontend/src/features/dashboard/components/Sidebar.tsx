@@ -22,7 +22,7 @@ const Sidebar = () => {
 
   // fallback name if none found
   const currentUserName =
-    user?.full_name || user?.name || user?.username || "User";
+    user?.full_name || user?.username || "User";
 
   useEffect(() => {
     fetchTeams();
