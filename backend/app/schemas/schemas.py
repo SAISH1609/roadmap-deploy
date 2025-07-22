@@ -192,6 +192,9 @@ class UserActivity(UserActivityBase):
     class Config:
         from_attributes = True
 
+class UserActivityWithUser(UserActivity):
+    user: User
+
 # Activity Dashboard Schemas
 class ActivityStats(BaseModel):
     topics_completed: int

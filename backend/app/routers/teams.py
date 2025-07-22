@@ -5,7 +5,7 @@ import secrets
 from datetime import datetime, timedelta, timezone
 
 from app.database import get_db
-from app.schemas.schemas import Team, TeamCreate, TeamInvite, TeamMember, TeamInvitation
+from app.schemas.schemas import Team, TeamCreate, TeamInvite, TeamMember, TeamInvitation, UserActivityWithUser
 from app.routers.auth import get_current_user
 from app.models.models import User
 from app.crud import teams as crud_teams
@@ -163,7 +163,7 @@ def get_team_members(
     
     return crud_teams.get_team_members(db=db, team_id=team_id)
 
-@router.get("/{team_id}/activity")
+@router.get("/{team_id}/activity", response_model=List[UserActivityWithUser])
 def get_team_activity(
     team_id: int,
     current_user: User = Depends(get_current_user),
@@ -174,7 +174,15 @@ def get_team_activity(
     if not crud_teams.is_team_member(db=db, team_id=team_id, user_id=current_user.id):
         raise HTTPException(status_code=403, detail="Not authorized to view team activity")
     
-    return crud_teams.get_team_activity(db=db, team_id=team_id)
+    activities_with_users = crud_teams.get_team_activity(db=db, team_id=team_id)
+    
+    response = []
+    for activity, user in activities_with_users:
+        activity_data = activity.__dict__
+        activity_data['user'] = user
+        response.append(activity_data)
+        
+    return response
 
 @router.get("/{team_id}/progress")
 def get_team_progress(

@@ -6,11 +6,19 @@ type Team = {
   name: string;
 };
 
+type User = {
+  id: number;
+  email: string;
+  username: string;
+  full_name: string | null;
+};
+
 type Activity = {
   id: number;
   activity_type: string;
   description: string;
   created_at: string;
+  user: User;
 };
 
 type TeamState = {

@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import and_
 from typing import List, Optional
 from app.models.models import Team, User, TeamSkill, Skill, TeamInvitation, UserActivity, TeamMembership
@@ -114,7 +114,7 @@ def get_team_members(db: Session, team_id: int):
     ).all()
 
 def get_team_activity(db: Session, team_id: int, limit: int = 50):
-    return db.query(UserActivity).filter(UserActivity.team_id == team_id).order_by(
+    return db.query(UserActivity, User).join(User, UserActivity.user_id == User.id).filter(UserActivity.team_id == team_id).order_by(
         UserActivity.created_at.desc()
     ).limit(limit).all()
 
