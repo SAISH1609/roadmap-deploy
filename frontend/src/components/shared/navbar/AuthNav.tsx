@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -13,12 +13,19 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router";
 import { PlusCircle, Users } from "lucide-react";
 import { useAuthStore } from '@/store/authStore';
+import { useTeamStore } from '@/store/teamStore';
 import { AuthDialog } from '../AuthDialog';
 
 export default function AuthNav() {
   const { isAuthenticated, user, logout } = useAuthStore();
+  const { teams, fetchTeams } = useTeamStore();
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
-  const teams = ["Team A", "Team B"]; // Placeholder
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchTeams();
+    }
+  }, [isAuthenticated, fetchTeams]);
 
   const handleLogout = () => {
     logout();
@@ -57,7 +64,9 @@ export default function AuthNav() {
           </DropdownMenuSubTrigger>
           <DropdownMenuSubContent>
             {teams.map(team => (
-              <DropdownMenuItem key={team}>{team}</DropdownMenuItem>
+              <DropdownMenuItem key={team.id} asChild>
+                <Link to={`/team/${team.id}/activity`}>{team.name}</Link>
+              </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>

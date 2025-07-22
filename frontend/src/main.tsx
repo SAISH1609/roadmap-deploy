@@ -59,23 +59,23 @@ const router = createBrowserRouter([
             path: "profile",
             element: <Profile />,
           },
-          {
-            path: "team/activity",
-            element: <TeamActivity />,
-          },
-          {
-            path: "team/progress",
-            element: <TeamProgress />,
-          },
-          {
-            path: "team/roadmaps",
-            element: <TeamRoadmaps />,
-          },
-          {
-            path: "team/members",
-            element: <TeamMembers />,
-          },
         ],
+      },
+      {
+        path: "team/:teamId/activity",
+        element: <TeamActivity />,
+      },
+      {
+        path: "team/:teamId/progress",
+        element: <TeamProgress />,
+      },
+      {
+        path: "team/:teamId/roadmaps",
+        element: <TeamRoadmaps />,
+      },
+      {
+        path: "team/:teamId/members",
+        element: <TeamMembers />,
       },
       {
         path: "teams/create",
