@@ -182,3 +182,5 @@ frontend/playwright-report/
 frontend/playwright/.cache/
 
 /.env
+
+docker-compose.override.yml
