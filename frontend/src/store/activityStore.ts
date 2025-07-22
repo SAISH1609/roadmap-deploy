@@ -48,7 +48,12 @@ interface LearningActivity {
   topic: string;
   topicSlug: string;
   date: string;
+  // Add a unique key for React rendering
+  id: string;
 }
+
+// Add a type for the filter
+type ActivityFilter = 'all' | 'started' | 'completed';
 
 interface ActivityState {
   stats: Stat[];
@@ -56,7 +61,9 @@ interface ActivityState {
   learningActivity: LearningActivity[];
   loading: boolean;
   error: string | null;
+  activityFilter: ActivityFilter; // <-- Add filter state
   fetchDashboardData: () => Promise<void>;
+  setActivityFilter: (filter: ActivityFilter) => void; // <-- Add action to set filter
 }
 
 // --- Helper function to format date ---
@@ -78,6 +85,10 @@ export const useactivityStore = create<ActivityState>((set) => ({
   learningActivity: [],
   loading: true,
   error: null,
+  activityFilter: 'all', // <-- Default filter
+
+  // Action to set the filter
+  setActivityFilter: (filter: ActivityFilter) => set({ activityFilter: filter }),
 
   // The function to fetch data from the backend
   fetchDashboardData: async () => {
@@ -113,10 +124,11 @@ export const useactivityStore = create<ActivityState>((set) => ({
         progress: r.progress_percentage,
       }));
 
-      const transformedLearningActivity: LearningActivity[] = data.learning_activity.map(a => ({
+      const transformedLearningActivity: LearningActivity[] = data.learning_activity.map((a, index) => ({
+        id: `${a.timestamp}-${index}`, // Create a unique ID
         action: a.action === 'done' || a.action === 'completed' ? 'completed' : 'started',
         topic: a.topic_title,
-        topicSlug: a.roadmap_slug, // The backend gives roadmap slug, good enough for linking
+        topicSlug: a.roadmap_slug,
         date: formatRelativeDate(a.timestamp),
       }));
 
