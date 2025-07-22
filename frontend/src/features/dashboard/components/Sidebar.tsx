@@ -16,7 +16,7 @@ import { useTeamStore } from "@/store/teamStore";
 const Sidebar = () => {
   const [selectedTeam, setSelectedTeam] = useState("Personal");
   const { user } = useAuthStore();
-  const { teams, fetchTeams } = useTeamStore();
+  const { teams, fetchTeams, setSelectedTeam: setSelectedTeamInStore } = useTeamStore();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -24,13 +24,15 @@ const Sidebar = () => {
     fetchTeams();
   }, [fetchTeams]);
 
-  const handleTeamSelect = (teamName: string) => {
-    setSelectedTeam(teamName);
+  const handleTeamSelect = (team: typeof teams[0]) => {
+    setSelectedTeam(team.name);
+    setSelectedTeamInStore(team);
     navigate('/account/team/activity');
   };
 
   const handlePersonalSelect = () => {
     setSelectedTeam("Personal");
+    setSelectedTeamInStore(null);
     navigate('/account');
   };
 
@@ -38,7 +40,6 @@ const Sidebar = () => {
     { href: "/account", label: "Activity" },
     { href: "/account/profile", label: "Profile" },
   ];
-
   const teamNavItems = [
     { href: "/account/team/activity", label: "Activity" },
     { href: "/account/team/progress", label: "Progress" },
@@ -68,7 +69,7 @@ const Sidebar = () => {
             <DropdownMenuSeparator />
             <DropdownMenuLabel>Teams</DropdownMenuLabel>
             {teams.map((team) => (
-              <DropdownMenuItem key={team.id} onSelect={() => handleTeamSelect(team.name)}>
+              <DropdownMenuItem key={team.id} onSelect={() => handleTeamSelect(team)}>
                 <Users className="mr-2 h-4 w-4" />
                 <span>{team.name}</span>
               </DropdownMenuItem>

@@ -1,16 +1,14 @@
 import { useEffect } from 'react';
-import { useParams } from 'react-router';
 import { useTeamStore } from '@/store/teamStore';
 
 const TeamActivity = () => {
-  const { teamId } = useParams<{ teamId: string }>();
-  const { activities, fetchTeamActivity } = useTeamStore();
+  const { activities, fetchTeamActivity, selectedTeam } = useTeamStore();
 
   useEffect(() => {
-    if (teamId) {
-      fetchTeamActivity(teamId);
+    if (selectedTeam) {
+      fetchTeamActivity(selectedTeam.id.toString());
     }
-  }, [teamId, fetchTeamActivity]);
+  }, [selectedTeam, fetchTeamActivity]);
 
   return (
     <div>

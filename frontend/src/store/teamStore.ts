@@ -16,13 +16,16 @@ type Activity = {
 type TeamState = {
   teams: Team[];
   activities: Activity[];
+  selectedTeam: Team | null;
   fetchTeams: () => Promise<void>;
   fetchTeamActivity: (teamId: string) => Promise<void>;
+  setSelectedTeam: (team: Team | null) => void;
 };
 
 export const useTeamStore = create<TeamState>((set) => ({
   teams: [],
   activities: [],
+  selectedTeam: null,
   fetchTeams: async () => {
     try {
       const teams = await getTeams();
@@ -39,4 +42,5 @@ export const useTeamStore = create<TeamState>((set) => ({
       console.error("Failed to fetch team activity:", error);
     }
   },
+  setSelectedTeam: (team: Team | null) => set({ selectedTeam: team }),
 }));

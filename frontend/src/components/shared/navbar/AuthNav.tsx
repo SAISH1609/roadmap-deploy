@@ -10,7 +10,7 @@ import {
     DropdownMenuSeparator
   } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { PlusCircle, Users } from "lucide-react";
 import { useAuthStore } from '@/store/authStore';
 import { useTeamStore } from '@/store/teamStore';
@@ -18,8 +18,9 @@ import { AuthDialog } from '../AuthDialog';
 
 export default function AuthNav() {
   const { isAuthenticated, user, logout } = useAuthStore();
-  const { teams, fetchTeams } = useTeamStore();
+  const { teams, fetchTeams, setSelectedTeam } = useTeamStore();
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -30,6 +31,11 @@ export default function AuthNav() {
   const handleLogout = () => {
     logout();
     // Optionally, redirect to home page or show a notification
+  };
+
+  const handleTeamClick = (team: typeof teams[0]) => {
+    setSelectedTeam(team);
+    navigate('/account/team/activity');
   };
 
   if (!isAuthenticated) {
@@ -64,8 +70,8 @@ export default function AuthNav() {
           </DropdownMenuSubTrigger>
           <DropdownMenuSubContent>
             {teams.map(team => (
-              <DropdownMenuItem key={team.id} asChild>
-                <Link to={`/team/${team.id}/activity`}>{team.name}</Link>
+              <DropdownMenuItem key={team.id} onClick={() => handleTeamClick(team)}>
+                {team.name}
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
