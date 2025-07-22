@@ -10,7 +10,7 @@ import {
     DropdownMenuSeparator
   } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import { PlusCircle, Users } from "lucide-react";
 import { useAuthStore } from '@/store/authStore';
 import { useTeamStore } from '@/store/teamStore';
