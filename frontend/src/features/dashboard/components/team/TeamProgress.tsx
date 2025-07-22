@@ -59,21 +59,21 @@ const TeamProgress = () => {
       <h2 className="text-2xl font-bold mb-4">Team Progress</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {teamMembers.map(member => (
-          <Card key={member.id}>
-            <CardHeader className="flex flex-row items-center justify-between">
+          <Card key={member.id} className="text-gray-900 dark:text-gray-100">
+            <CardHeader className="flex flex-row items-center justify-between text-gray-900 dark:text-gray-100">
               <div className="flex items-center space-x-4">
                 <Avatar>
                   <AvatarImage src={member.profile_picture} alt={member.username} />
                   <AvatarFallback>{member.full_name?.charAt(0).toUpperCase() || member.username.charAt(0).toUpperCase()}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <CardTitle>{member.full_name || member.username}</CardTitle>
+                  <CardTitle >{member.full_name || member.username}</CardTitle>
                   <p className="text-sm text-gray-500">{member.email}</p>
                 </div>
               </div>
               {member.id === user?.id && <Badge variant="destructive">You</Badge>}
             </CardHeader>
-            <CardContent>
+            <CardContent >
               {member.progress && member.progress.length > 0 ? (
                 <ul>
                   {member.progress.slice(0, 4).map(p => (

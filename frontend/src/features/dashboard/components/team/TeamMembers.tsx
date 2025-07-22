@@ -128,15 +128,15 @@ const TeamMembers = () => {
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
+      <Card className="text-gray-900 dark:text-gray-100">
+        <CardHeader >
           <div className="flex justify-between items-center">
-            <CardTitle>{selectedTeam.name}</CardTitle>
+            <CardTitle >{selectedTeam.name}</CardTitle>
             <Button variant="destructive" onClick={handleLeaveTeam}>Leave Team</Button>
           </div>
           <CardDescription>{members.length} people in this team.</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent >
           <div className="space-y-4">
             {members.map((member: any) => (
               <div key={member.id} className="flex items-center justify-between">
@@ -160,7 +160,7 @@ const TeamMembers = () => {
       </Card>
 
       {isAdmin && (
-        <Card>
+        <Card className="text-gray-900 dark:text-gray-100">
           <CardHeader>
             <div className="flex justify-between items-center">
               <CardTitle>Pending Invitations</CardTitle>

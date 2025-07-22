@@ -50,11 +50,11 @@ const TeamRoadmaps = () => {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Team Roadmaps</CardTitle>
+    <Card className="text-gray-900 dark:text-gray-100">
+      <CardHeader >
+        <CardTitle >Team Roadmaps</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent >
         <div className="space-y-4">
           {roadmaps.length > 0 ? (
             roadmaps.map((roadmap) => (

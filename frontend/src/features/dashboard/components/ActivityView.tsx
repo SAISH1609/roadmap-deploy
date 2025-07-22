@@ -44,7 +44,7 @@ const ActivityView = () => {
       <div className="grid gap-4 md:grid-cols-3 mb-8">
         {stats.map((stat) => {
           const statCard = (
-            <Card>
+            <Card className="text-gray-900 dark:text-gray-100">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
                 {renderStatIcon(stat.icon)}
@@ -72,7 +72,7 @@ const ActivityView = () => {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {roadmaps.map((roadmap) => (
             <Link to={`/roadmaps/${roadmap.slug}`} key={roadmap.title} className="hover:scale-105 transition-transform duration-200">
-              <Card>
+              <Card className="text-gray-900 dark:text-gray-100">
                 <CardHeader>
                   <CardTitle>{roadmap.title}</CardTitle>
                 </CardHeader>
@@ -94,7 +94,7 @@ const ActivityView = () => {
       {/* Learning Activity Section */}
       <div>
         <h2 className="text-2xl font-bold mb-4">Learning Activity</h2>
-        <Card>
+        <Card className="text-gray-900 dark:text-gray-100">
           <CardContent className="p-6">
             <ul className="space-y-4">
               {learningActivity.map((activity, index) => (

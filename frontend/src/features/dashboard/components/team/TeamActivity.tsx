@@ -69,20 +69,20 @@ const TeamActivity = () => {
       <h2 className="text-2xl font-bold mb-4">Team Activity</h2>
       <div className="space-y-4">
         {Object.values(activitiesByUser).map(({ user, activities }) => (
-          <Card key={user.id}>
-            <CardHeader>
+          <Card key={user.id} className="text-gray-900 dark:text-gray-100">
+            <CardHeader >
               <div className="flex items-center space-x-4">
                 <Avatar>
                   <AvatarImage src={user.profile_picture} alt={user.username} />
                   <AvatarFallback>{user.username.charAt(0).toUpperCase()}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <CardTitle>{user.full_name || user.username}</CardTitle>
+                  <CardTitle  >{user.full_name || user.username}</CardTitle>
                   <p className="text-sm text-gray-500">{user.email}</p>
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent >
               <ul>
                 {activities.map((activity) => (
                   <li key={activity.id} className="mb-2">
