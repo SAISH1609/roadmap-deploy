@@ -4,7 +4,7 @@ import { useTeamStore } from '../../../../store/teamStore';
 import { Card, CardContent, CardHeader, CardTitle } from "../../../../components/ui/card";
 import { Button } from "../../../../components/ui/button";
 import { ExternalLink } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 type Roadmap = {
   id: number;

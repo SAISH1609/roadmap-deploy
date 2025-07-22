@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { X } from "lucide-react";
 import { useCreateTeamStore } from "@/store/createTeamStore";
 import { createTeam } from "@/services/teamService";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 interface Step3Props {
   prevStep: () => void;
