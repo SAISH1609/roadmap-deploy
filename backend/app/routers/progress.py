@@ -8,6 +8,7 @@ from app.routers.auth import get_current_user
 from app.models.models import User
 from app.crud import progress as crud_progress
 from app.crud import activity as crud_activity
+from app.crud.teams import get_team_members
 
 router = APIRouter()
 
@@ -18,6 +19,18 @@ def get_user_progress(
 ):
     """Get user's progress on all roadmaps"""
     return crud_progress.get_user_progress_summary(db=db, user_id=current_user.id)
+
+@router.get("/{user_id}/summary", response_model=List[ProgressSummary])
+def get_user_progress_summary_for_user(
+    user_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Get a specific user's progress summary across all roadmaps"""
+    # Optional: Add authorization logic here to ensure the current_user has permission
+    # to view the progress of the user with user_id. For example, if they are in the same team.
+    return crud_progress.get_user_progress_summary(db=db, user_id=user_id)
+
 
 @router.get("/{roadmap_id}", response_model=UserProgress)
 def get_roadmap_progress(

@@ -3,7 +3,7 @@ import { create } from 'zustand';
 type TeamData = {
   name: string;
   githubUrl: string;
-  roadmaps: { name: string; copyDetails: boolean }[];
+  roadmap_ids: number[];
   members: string[];
 };
 
@@ -21,7 +21,7 @@ const initialState: Omit<CreateTeamState, 'nextStep' | 'prevStep' | 'updateTeamD
   teamData: {
     name: '',
     githubUrl: '',
-    roadmaps: [],
+    roadmap_ids: [],
     members: [],
   },
 };
