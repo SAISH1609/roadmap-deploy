@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.orm import Session
 from typing import List
 import secrets
@@ -59,6 +59,7 @@ def get_team(
 def invite_team_member(
     team_id: int,
     invitation: TeamInvite,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -72,9 +73,13 @@ def invite_team_member(
     if user_role not in ["admin", "manager"]:
         raise HTTPException(status_code=403, detail="Not authorized to invite members")
     
-    # Check if user is already a member
+    # Check if user exists in the database since only registered users can be invited
     invited_user = crud_teams.get_user_by_email(db=db, email=invitation.email)
-    if invited_user and crud_teams.is_team_member(db=db, team_id=team_id, user_id=invited_user.id):
+    if not invited_user:
+        raise HTTPException(status_code=404, detail="User not found. Only registered users can be invited to teams.")
+    
+    # Check if user is already a member
+    if crud_teams.is_team_member(db=db, team_id=team_id, user_id=invited_user.id):
         raise HTTPException(status_code=400, detail="User is already a team member")
     
     # Check if invitation already exists
@@ -97,18 +102,17 @@ def invite_team_member(
     
     db_invitation = crud_teams.create_invitation(db=db, invitation_data=invitation_data)
     
-    # Send email invitation
-    send_team_invitation_email(invitation.email, team.name, token)
-    
+    # Send email invitation asynchronously
+    background_tasks.add_task(send_team_invitation_email, invitation.email, team.name, token)
+
     return {"message": "Invitation sent successfully"}
 
 @router.post("/join/{token}")
 def accept_invitation(
     token: str,
-    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Accept team invitation"""
+    """Accept team invitation (no authentication required, for registered users only)"""
     invitation = crud_teams.get_invitation_by_token(db=db, token=token)
     if not invitation:
         raise HTTPException(status_code=404, detail="Invalid invitation token")
@@ -119,16 +123,32 @@ def accept_invitation(
     if invitation.expires_at and invitation.expires_at < datetime.now(timezone.utc):
         raise HTTPException(status_code=400, detail="Invitation has expired")
     
-    if invitation.email != current_user.email:
-        raise HTTPException(status_code=400, detail="Invitation is for a different email")
+    # Get the user
+    user = crud_teams.get_user_by_email(db=db, email=invitation.email)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found. Please contact the team admin.")
     
-    # Add user to team
-    crud_teams.add_team_member(db=db, team_id=invitation.team_id, user_id=current_user.id, role=invitation.role)
+    # Check if user is already a team member
+    if crud_teams.is_team_member(db=db, team_id=invitation.team_id, user_id=user.id):
+        raise HTTPException(status_code=400, detail="You are already a member of this team")
+    
+    # Add user to the team
+    crud_teams.add_team_member(db=db, team_id=invitation.team_id, user_id=user.id, role=invitation.role)
     
     # Mark invitation as accepted
     crud_teams.accept_invitation(db=db, invitation_id=invitation.id)
     
-    return {"message": "Successfully joined the team"}
+    # Get team information for response
+    team = crud_teams.get_team_by_id(db=db, team_id=invitation.team_id)
+    
+    return {
+        "message": f"Successfully joined the team '{team.name}'",
+        "action": "joined",
+        "team_id": invitation.team_id,
+        "team_name": team.name,
+        "role": invitation.role,
+        "user_email": invitation.email
+    }
 
 @router.get("/{team_id}/members", response_model=List[TeamMember])
 def get_team_members(

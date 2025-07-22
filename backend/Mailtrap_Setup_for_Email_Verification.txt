@@ -1,0 +1,60 @@
+# Mailtrap Setup for Email Verification
+
+This guide explains how to configure Mailtrap for email verification in your FastAPI backend.
+
+---
+
+## 1. Sign Up for Mailtrap
+
+- Go to [Mailtrap](https://mailtrap.io/) and create a free account.
+
+---
+
+## 2. Get Your SMTP Credentials
+
+- In Mailtrap, go to your Inbox.
+- Click **SMTP Settings**.
+- Copy the following values:
+  - Username
+  - Password
+  - Host (usually `sandbox.smtp.mailtrap.io`)
+  - Port (usually `587`)
+
+---
+
+## 3. Update Your `.env` File
+
+Add or update these lines in your `.env` file:
+
+```env
+MAIL_USERNAME=your_mailtrap_username
+MAIL_PASSWORD=your_mailtrap_password
+MAIL_FROM=your@email.com
+MAIL_PORT=587
+MAIL_SERVER=sandbox.smtp.mailtrap.io
+MAIL_TLS=True
+MAIL_SSL=False
+MAIL_HOST=smtp.mailtrap.io
+```
+
+Replace `your_mailtrap_username` and `your_mailtrap_password` with your actual Mailtrap credentials.
+
+---
+
+## 4. How It Works
+
+- When a user registers, the backend sends a verification email using Mailtrap SMTP.
+- The email will appear in your Mailtrap inbox for testing.
+- No real emails are sent to users—Mailtrap is for development/testing only.
+
+---
+
+## 5. Troubleshooting
+
+- If you do not see emails in Mailtrap, double-check your credentials in `.env`.
+- Make sure your backend is restarted after changing `.env`.
+- Check your backend logs for any SMTP errors.
+
+---
+
+**You are now ready to use Mailtrap for email

@@ -101,7 +101,17 @@ def accept_invitation(db: Session, invitation_id: int):
         db.commit()
 
 def get_team_members(db: Session, team_id: int):
-    return db.query(TeamMembership).filter(TeamMembership.team_id == team_id).all()
+    # Join TeamMembership with User to get all user details
+    return db.query(
+        User.id,
+        User.email,
+        User.username,
+        User.full_name,
+        TeamMembership.role,
+        TeamMembership.joined_at
+    ).join(TeamMembership, User.id == TeamMembership.user_id).filter(
+        TeamMembership.team_id == team_id
+    ).all()
 
 def get_team_activity(db: Session, team_id: int, limit: int = 50):
     return db.query(UserActivity).filter(UserActivity.team_id == team_id).order_by(
