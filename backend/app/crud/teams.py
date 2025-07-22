@@ -2,31 +2,23 @@ from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import and_
 from typing import List, Optional
 from app.models.models import Team, User, TeamSkill, Skill, TeamInvitation, UserActivity, TeamMembership
-from datetime import datetime
+from datetime import datetime, timedelta
+import secrets
 
 def create_team(db: Session, team_data: dict):
-    # Extract skills from team_data to handle separately
     skills = team_data.pop('skills', [])
-    
-    # Create team without skills
     db_team = Team(**team_data)
     db.add(db_team)
-    db.flush()  # This gives us the team ID without committing
-    
-    # Handle skills if any were provided
+    db.flush()
     if skills:
         for skill_name in skills:
-            # Create or get existing skill
             skill = db.query(Skill).filter(Skill.name == skill_name).first()
             if not skill:
                 skill = Skill(name=skill_name, is_predefined=False)
                 db.add(skill)
                 db.flush()
-            
-            # Create team-skill relationship
             team_skill = TeamSkill(team_id=db_team.id, skill_id=skill.id)
             db.add(team_skill)
-    
     db.commit()
     db.refresh(db_team)
     return db_team
@@ -38,7 +30,6 @@ def get_user_teams(db: Session, user_id: int):
     return db.query(Team).join(TeamMembership).filter(TeamMembership.user_id == user_id).all()
 
 def add_team_member(db: Session, team_id: int, user_id: int, role: str = "member"):
-    # Check if already a member
     if not is_team_member(db, team_id, user_id):
         membership = TeamMembership(team_id=team_id, user_id=user_id, role=role)
         db.add(membership)
@@ -55,10 +46,9 @@ def remove_team_member(db: Session, team_id: int, user_id: int):
     return False
 
 def is_team_member(db: Session, team_id: int, user_id: int) -> bool:
-    result = db.query(TeamMembership).filter(
+    return db.query(TeamMembership).filter(
         and_(TeamMembership.team_id == team_id, TeamMembership.user_id == user_id)
-    ).first()
-    return result is not None
+    ).first() is not None
 
 def get_user_role_in_team(db: Session, team_id: int, user_id: int) -> Optional[str]:
     result = db.query(TeamMembership.role).filter(
@@ -68,22 +58,6 @@ def get_user_role_in_team(db: Session, team_id: int, user_id: int) -> Optional[s
 
 def get_user_by_email(db: Session, email: str):
     return db.query(User).filter(User.email == email).first()
-
-def add_team_skills(db: Session, team_id: int, skills: List[str]):
-    for skill_name in skills:
-        # Check if skill exists
-        skill = db.query(Skill).filter(Skill.name == skill_name).first()
-        if not skill:
-            # Create custom skill
-            skill = Skill(name=skill_name, is_predefined=False)
-            db.add(skill)
-            db.flush()
-        
-        # Add to team skills
-        team_skill = TeamSkill(team_id=team_id, skill_id=skill.id, is_custom=not skill.is_predefined)
-        db.add(team_skill)
-    
-    db.commit()
 
 def create_invitation(db: Session, invitation_data: dict):
     db_invitation = TeamInvitation(**invitation_data)
@@ -101,6 +75,29 @@ def get_pending_invitation(db: Session, team_id: int, email: str):
         )
     ).first()
 
+def get_invitation_by_id(db: Session, invitation_id: int):
+    return db.query(TeamInvitation).filter(TeamInvitation.id == invitation_id).first()
+
+def get_pending_invitations_for_team(db: Session, team_id: int):
+    return db.query(TeamInvitation).filter(
+        and_(TeamInvitation.team_id == team_id, TeamInvitation.is_accepted == False)
+    ).all()
+
+def resend_invitation(db: Session, invitation: TeamInvitation):
+    invitation.token = secrets.token_urlsafe(32)
+    invitation.expires_at = datetime.utcnow() + timedelta(days=7)
+    db.commit()
+    db.refresh(invitation)
+    return invitation
+
+def delete_invitation(db: Session, invitation_id: int):
+    invitation = db.query(TeamInvitation).filter(TeamInvitation.id == invitation_id).first()
+    if invitation:
+        db.delete(invitation)
+        db.commit()
+        return True
+    return False
+
 def get_invitation_by_token(db: Session, token: str):
     return db.query(TeamInvitation).filter(TeamInvitation.token == token).first()
 
@@ -111,14 +108,8 @@ def accept_invitation(db: Session, invitation_id: int):
         db.commit()
 
 def get_team_members(db: Session, team_id: int):
-    # Join TeamMembership with User to get all user details
     return db.query(
-        User.id,
-        User.email,
-        User.username,
-        User.full_name,
-        TeamMembership.role,
-        TeamMembership.joined_at
+        User.id, User.email, User.username, User.full_name, TeamMembership.role, TeamMembership.joined_at
     ).join(TeamMembership, User.id == TeamMembership.user_id).filter(
         TeamMembership.team_id == team_id
     ).all()
@@ -129,6 +120,4 @@ def get_team_activity(db: Session, team_id: int, limit: int = 50):
     ).limit(limit).all()
 
 def get_team_progress(db: Session, team_id: int):
-    # This would return progress for all team members on team roadmaps
-    # Ill make this later since it depends on how we want ot structure the progress data
     pass

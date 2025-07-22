@@ -16,7 +16,7 @@ export const getTeamMembers = async (teamId: string) => {
 };
 
 export const inviteTeamMember = async (teamId: string, email: string) => {
-  const response = await apiClient.post(`/teams/${teamId}/invite`, { email });
+  const response = await apiClient.post(`/teams/${teamId}/invite`, { email, role: 'member' });
   return response.data;
 };
 
@@ -27,5 +27,20 @@ export const leaveTeam = async (teamId: string) => {
 
 export const removeTeamMember = async (teamId: string, userId: number) => {
   const response = await apiClient.delete(`/teams/${teamId}/members/${userId}`);
+  return response.data;
+};
+
+export const getPendingInvitations = async (teamId: string) => {
+  const response = await apiClient.get(`/teams/${teamId}/invitations`);
+  return response.data;
+};
+
+export const resendInvitation = async (teamId: string, invitationId: number) => {
+  const response = await apiClient.post(`/teams/${teamId}/invitations/${invitationId}/resend`);
+  return response.data;
+};
+
+export const cancelInvitation = async (teamId: string, invitationId: number) => {
+  const response = await apiClient.delete(`/teams/${teamId}/invitations/${invitationId}`);
   return response.data;
 };
