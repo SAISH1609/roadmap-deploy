@@ -5,7 +5,7 @@ import secrets
 from datetime import datetime, timedelta, timezone
 
 from app.database import get_db
-from app.schemas.schemas import Team, TeamCreate, TeamInvite, TeamMember, TeamInvitation, UserActivityWithUser
+from app.schemas.schemas import Team, TeamCreate, TeamInvite, TeamMember, TeamInvitation, UserActivityWithUser, RoadmapSummary
 from app.routers.auth import get_current_user
 from app.models.models import User
 from app.crud import teams as crud_teams
@@ -156,3 +156,27 @@ def get_team_progress(team_id: int, current_user: User = Depends(get_current_use
     if not crud_teams.is_team_member(db=db, team_id=team_id, user_id=current_user.id):
         raise HTTPException(status_code=403, detail="Not authorized to view team progress")
     return crud_teams.get_team_progress(db=db, team_id=team_id)
+
+@router.get("/{team_id}/roadmaps", response_model=List[RoadmapSummary])
+def get_team_roadmaps(team_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not crud_teams.is_team_member(db=db, team_id=team_id, user_id=current_user.id):
+        raise HTTPException(status_code=403, detail="Not authorized to view team roadmaps")
+    
+    roadmaps = crud_teams.get_team_roadmaps(db=db, team_id=team_id)
+    
+    # Convert to RoadmapSummary and handle bookmarks
+    roadmap_summaries = []
+    for roadmap in roadmaps:
+        is_bookmarked = crud_teams.is_roadmap_bookmarked(db, user_id=current_user.id, roadmap_id=roadmap.id)
+        roadmap_summary = RoadmapSummary(
+            id=roadmap.id,
+            title=roadmap.title,
+            slug=roadmap.slug,
+            description=roadmap.description,
+            category=roadmap.category,
+            total_topics=roadmap.total_topics,
+            is_bookmarked=is_bookmarked
+        )
+        roadmap_summaries.append(roadmap_summary)
+        
+    return roadmap_summaries

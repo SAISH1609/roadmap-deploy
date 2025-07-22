@@ -15,6 +15,11 @@ export const getTeamMembers = async (teamId: string) => {
   return response.data;
 };
 
+export const getTeamRoadmaps = async (teamId: string) => {
+  const response = await apiClient.get(`/teams/${teamId}/roadmaps`);
+  return response.data;
+};
+
 export const inviteTeamMember = async (teamId: string, email: string) => {
   const response = await apiClient.post(`/teams/${teamId}/invite`, { email, role: 'member' });
   return response.data;

@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import and_
 from typing import List, Optional
-from app.models.models import Team, User, TeamSkill, Skill, TeamInvitation, UserActivity, TeamMembership
+from app.models.models import Team, User, TeamSkill, Skill, TeamInvitation, UserActivity, TeamMembership, Roadmap, UserProgress
+from app.crud.roadmaps import is_roadmap_bookmarked
 from datetime import datetime, timedelta
 import secrets
 
@@ -121,3 +122,6 @@ def get_team_activity(db: Session, team_id: int, limit: int = 50):
 
 def get_team_progress(db: Session, team_id: int):
     pass
+
+def get_team_roadmaps(db: Session, team_id: int):
+    return db.query(Roadmap).join(UserProgress, Roadmap.id == UserProgress.roadmap_id).join(TeamMembership, UserProgress.user_id == TeamMembership.user_id).filter(TeamMembership.team_id == team_id).distinct(Roadmap.id).all()
