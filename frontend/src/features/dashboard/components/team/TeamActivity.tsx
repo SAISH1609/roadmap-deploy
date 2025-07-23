@@ -67,37 +67,48 @@ const TeamActivity = () => {
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">Team Activity</h2>
-      <div className="space-y-4">
-        {Object.values(activitiesByUser).map(({ user, activities }) => (
-          <Card key={user.id} className="text-gray-900 dark:text-gray-100">
-            <CardHeader >
-              <div className="flex items-center space-x-4">
-                <Avatar>
-                  <AvatarImage src={user.profile_picture} alt={user.username} />
-                  <AvatarFallback>{user.username.charAt(0).toUpperCase()}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <CardTitle  >{user.full_name || user.username}</CardTitle>
-                  <p className="text-sm text-gray-500">{user.email}</p>
+      {activities.length === 0 ? (
+        <Card className="text-gray-900 dark:text-gray-100">
+          <CardContent className="text-center py-12">
+            <h3 className="text-xl font-bold mb-2">No Activity</h3>
+            <p className="text-gray-500 dark:text-gray-400">
+              Team activity will appear here once members start tracking their progress.
+            </p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          {Object.values(activitiesByUser).map(({ user, activities }) => (
+            <Card key={user.id} className="text-gray-900 dark:text-gray-100">
+              <CardHeader>
+                <div className="flex items-center space-x-4">
+                  <Avatar>
+                    <AvatarImage src={user.profile_picture} alt={user.username} />
+                    <AvatarFallback>{user.username.charAt(0).toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <CardTitle>{user.full_name || user.username}</CardTitle>
+                    <p className="text-sm text-gray-500">{user.email}</p>
+                  </div>
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent >
-              <ul>
-                {activities.map((activity) => (
-                  <li key={activity.id} className="mb-2">
-                    <p className="font-semibold">{formatActivityType(activity.activity_type)}</p>
-                    <p>{activity.description}</p>
-                    <p className="text-sm text-gray-500">
-                      {new Date(activity.created_at).toLocaleString()}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              </CardHeader>
+              <CardContent>
+                <ul>
+                  {activities.map((activity) => (
+                    <li key={activity.id} className="mb-2">
+                      <p className="font-semibold">{formatActivityType(activity.activity_type)}</p>
+                      <p>{activity.description}</p>
+                      <p className="text-sm text-gray-500">
+                        {new Date(activity.created_at).toLocaleString()}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

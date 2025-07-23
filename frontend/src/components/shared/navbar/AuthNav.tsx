@@ -50,42 +50,50 @@ export default function AuthNav() {
   }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button className="bg-purple-600 text-white rounded-full">
-          {user?.username || 'Account'} / Teams
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56">
-        <DropdownMenuItem asChild>
-          <Link to="/account">Account</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link to="/account/profile">My Profile</Link>
-        </DropdownMenuItem>
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger>
-            <Users className="mr-2 h-4 w-4" />
-            <span>Teams</span>
-          </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent>
-            {teams.map(team => (
-              <DropdownMenuItem key={team.id} onClick={() => handleTeamClick(team)}>
-                {team.name}
+    <div className="flex items-center gap-4">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button className="bg-purple-600 text-white rounded-full">
+            {user?.username || 'Account'} / Teams
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56">
+          <DropdownMenuItem asChild>
+            <Link to="/account">Account</Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link to="/account/profile">My Profile</Link>
+          </DropdownMenuItem>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              <Users className="mr-2 h-4 w-4" />
+              <span>Teams</span>
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>
+              {teams.map(team => (
+                <DropdownMenuItem key={team.id} onClick={() => handleTeamClick(team)}>
+                  {team.name}
+                </DropdownMenuItem>
+              ))}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link to="/teams/create">
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Create new team
+                </Link>
               </DropdownMenuItem>
-            ))}
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link to="/teams/create">
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Create new team
-              </Link>
-            </DropdownMenuItem>
-          </DropdownMenuSubContent>
-        </DropdownMenuSub>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <Button
+        onClick={() => window.open('/admin/dashboard', '_blank')}
+        className="bg-blue-600 text-white rounded-full"
+      >
+        Admin
+      </Button>
+    </div>
   );
 }
