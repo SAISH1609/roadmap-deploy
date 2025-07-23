@@ -2,6 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 import uvicorn
+import os
 
 from app.database import get_db
 from app.routers import auth, roadmaps, teams, users, progress, admin, activity, content
@@ -15,14 +16,28 @@ app = FastAPI(
     description="Backend API for roadmap.sh platform",
 )
 
+# Configure CORS for both development and production
+allowed_origins = [
+    "http://localhost:3000", 
+    "http://127.0.0.1:3000",
+    "http://localhost:3001",
+    "http://localhost:5173",
+]
+
+# Add production frontend URL if available
+frontend_url = os.getenv("FRONTEND_URL")
+if frontend_url:
+    allowed_origins.append(frontend_url)
+
+# In production, you might want to be more restrictive
+if os.getenv("ENVIRONMENT") == "production":
+    # Add your Railway frontend domain here once you know it
+    # allowed_origins = ["https://your-frontend-domain.railway.app"]
+    pass
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000", 
-        "http://127.0.0.1:3000",
-        "http://localhost:3001",
-        "http://localhost:5173",
-    ],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -51,4 +66,5 @@ def cors_test():
     return {"message": "CORS is working!", "origin": "allowed"}
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=False)

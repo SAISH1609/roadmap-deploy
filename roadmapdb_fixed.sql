@@ -541,10 +541,10 @@ INSERT INTO public.topic_resources VALUES (220, 81, 'Python - Regular Expression
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO public.users VALUES (4, 'saishchodankar1902@gmail.com', 'SC1902', 'Saish Chodankar', '$2b$12$BgnLEuhvnncd4QPsA8opXe1/b6fnnU07iG8wGT4zcdiTdzDGRxlxG', true, false, '2025-07-14 19:50:59.962898+05:30', NULL);
-INSERT INTO public.users VALUES (2, 'saanvigude04@gmail.com', 'SSG', 'Saanvi Gude', '$2b$12$72cR6nO84pdhhEgKqxidFOLNhdREcLPIlesNFLPg7GsJOqze.v6nW', true, true, '2025-07-14 19:46:45.349818+05:30', '2025-07-14 19:53:20.120226+05:30');
-INSERT INTO public.users VALUES (3, 'rohitbinoj@gmail.com', 'RB', 'Rohit Binoj', '$2b$12$jX4IJnvZB1l/SqLp.0Ftie4wbQ0wVQRqFns1m8Qoc/JOTWW9B0RFG', true, true, '2025-07-14 19:49:46.648794+05:30', '2025-07-14 19:53:43.950088+05:30');
-INSERT INTO public.users VALUES (1, 'admin@example.com', 'Admin', 'Admin User', '$2b$12$CUmjkuGTROVw1umWvzcFiutxmisShfO.LDDIgXEZQE3mDLlS9RwwS', true, true, '2025-07-14 19:42:37.840649+05:30', '2025-07-14 19:53:59.731496+05:30');
+INSERT INTO public.users (id, email, username, full_name, hashed_password, is_active, is_verified, created_at, updated_at) VALUES (4, 'saishchodankar1902@gmail.com', 'SC1902', 'Saish Chodankar', '$2b$12$BgnLEuhvnncd4QPsA8opXe1/b6fnnU07iG8wGT4zcdiTdzDGRxlxG', true, false, '2025-07-14 19:50:59.962898+05:30', NULL);
+INSERT INTO public.users (id, email, username, full_name, hashed_password, is_active, is_verified, created_at, updated_at) VALUES (2, 'saanvigude04@gmail.com', 'SSG', 'Saanvi Gude', '$2b$12$72cR6nO84pdhhEgKqxidFOLNhdREcLPIlesNFLPg7GsJOqze.v6nW', true, true, '2025-07-14 19:46:45.349818+05:30', '2025-07-14 19:53:20.120226+05:30');
+INSERT INTO public.users (id, email, username, full_name, hashed_password, is_active, is_verified, created_at, updated_at) VALUES (3, 'rohitbinoj@gmail.com', 'RB', 'Rohit Binoj', '$2b$12$jX4IJnvZB1l/SqLp.0Ftie4wbQ0wVQRqFns1m8Qoc/JOTWW9B0RFG', true, true, '2025-07-14 19:49:46.648794+05:30', '2025-07-14 19:53:43.950088+05:30');
+INSERT INTO public.users (id, email, username, full_name, hashed_password, is_active, is_verified, is_admin, created_at, updated_at) VALUES (1, 'admin@example.com', 'Admin', 'Admin User', '$2b$12$CUmjkuGTROVw1umWvzcFiutxmisShfO.LDDIgXEZQE3mDLlS9RwwS', true, true, true, '2025-07-14 19:42:37.840649+05:30', '2025-07-14 19:53:59.731496+05:30');
 
 
 --

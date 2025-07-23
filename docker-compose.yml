@@ -17,24 +17,23 @@ services:
       sh -c "
         echo 'Waiting for database to be ready...' &&
         python manage_db.py check-connection &&
-        echo 'Running database migrations...' &&
-        alembic upgrade head &&
+        echo 'Checking and creating tables if needed...' &&
+        python manage_db.py create-tables &&
         echo 'Checking if data already exists...' &&
-        if python manage_db.py check-data-exists --table-name guides | grep -q 'Found 0 records'; then
-          echo 'Loading data from guides_data.sql...' &&
-          psql "$$DATABASE_URL" -f /app/../guides_data.sql
+        if ! python manage_db.py check-data-exists | grep -q 'Found 0 records'; then
+          echo 'Data already exists, skipping SQL import'
         else
-          echo 'Guides data already exists, skipping SQL import'
-        fi &&
-        if python manage_db.py check-data-exists --table-name videos | grep -q 'Found 0 records'; then
-          echo 'Loading data from videos_data.sql...' &&
-          psql "$$DATABASE_URL" -f /app/../videos_data.sql
-        else
-          echo 'Videos data already exists, skipping SQL import'
+          echo 'Loading data from roadmapdb_fixed.sql...' &&
+          psql \"$$DATABASE_URL\" -f /app/../roadmapdb_fixed.sql &&
+          echo 'Loading guides data...' &&
+          psql \"$$DATABASE_URL\" -f /app/../guides_data.sql &&
+          echo 'Loading videos data...' &&
+          psql \"$$DATABASE_URL\" -f /app/../videos_data.sql
         fi &&
         echo 'Starting application...' &&
         uvicorn main:app --host 0.0.0.0 --port 8000 --reload
       "
+
     ports:
       - "8000:8000"
     volumes:
@@ -57,7 +56,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=roadmapdb
     ports:
-      - "5432:5432"
+      - "5433:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d roadmapdb"]
       interval: 5s
