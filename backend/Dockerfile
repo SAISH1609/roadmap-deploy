@@ -21,13 +21,8 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Copy the rest of the application's code into the container at /app
 COPY . /app
 
-# Copy SQL files to the container
-COPY ../roadmapdb_fixed.sql /app/roadmapdb_fixed.sql
-COPY ../guides_data.sql /app/guides_data.sql  
-COPY ../videos_data.sql /app/videos_data.sql
-
+# SQL files are now included in the COPY . /app above
 # Copy and make executable the railway startup script
-COPY railway_start.sh /app/railway_start.sh
 RUN chmod +x /app/railway_start.sh
 
 # Expose port

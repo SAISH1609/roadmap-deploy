@@ -149,6 +149,11 @@ Thumbs.db
 *.db
 *.sqlite
 
+# Keep SQL data files for Railway deployment
+!roadmapdb_fixed.sql
+!guides_data.sql
+!videos_data.sql
+
 # Alembic
 alembic/versions/*.py
 !alembic/versions/__init__.py
