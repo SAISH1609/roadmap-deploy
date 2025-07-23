@@ -132,15 +132,15 @@ def reset_database():
         return False
 
 
-def check_data_exists():
-    """Check if data already exists in the database"""
+def check_data_exists(table_name="roadmap_topics"):
+    """Check if data already exists in the specified table"""
     try:
         with engine.connect() as connection:
-            # Check if roadmap_topics table has any data
+            # Check if the specified table has any data
             result = connection.execute(
-                text("SELECT COUNT(*) FROM roadmap_topics"))
+                text(f"SELECT COUNT(*) FROM {table_name}"))
             count = result.fetchone()[0]
-            print(f"Found {count} records in roadmap_topics table")
+            print(f"Found {count} records in {table_name} table")
             return count > 0
     except Exception as e:
         print(f"Error checking data existence: {e}")
@@ -219,6 +219,8 @@ def main():
         "check-tables-exist"
     ], help="Command to execute")
 
+    parser.add_argument("--table-name", default="roadmap_topics", help="Table to check for data")
+
     args = parser.parse_args()
 
     print("Roadmap.sh Database Manager")
@@ -245,8 +247,8 @@ def main():
 
     elif args.command == "check-data-exists":
         if check_connection():
-            exists = check_data_exists()
-            print(f"Data exists: {exists}")
+            exists = check_data_exists(args.table_name)
+            print(f"Data exists in {args.table_name}: {exists}")
 
     elif args.command == "check-tables-exist":
         if check_connection():

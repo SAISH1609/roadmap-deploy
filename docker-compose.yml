@@ -17,14 +17,20 @@ services:
       sh -c "
         echo 'Waiting for database to be ready...' &&
         python manage_db.py check-connection &&
-        echo 'Checking and creating tables if needed...' &&
-        python manage_db.py create-tables &&
+        echo 'Running database migrations...' &&
+        alembic upgrade head &&
         echo 'Checking if data already exists...' &&
-        if ! python manage_db.py check-data-exists | grep -q 'Found 0 records'; then
-          echo 'Data already exists, skipping SQL import'
+        if python manage_db.py check-data-exists --table-name guides | grep -q 'Found 0 records'; then
+          echo 'Loading data from guides_data.sql...' &&
+          psql "$$DATABASE_URL" -f /app/../guides_data.sql
         else
-          echo 'Loading data from roadmapdb_fixed.sql...' &&
-          psql \"$$DATABASE_URL\" -f /app/../roadmapdb_fixed.sql
+          echo 'Guides data already exists, skipping SQL import'
+        fi &&
+        if python manage_db.py check-data-exists --table-name videos | grep -q 'Found 0 records'; then
+          echo 'Loading data from videos_data.sql...' &&
+          psql "$$DATABASE_URL" -f /app/../videos_data.sql
+        else
+          echo 'Videos data already exists, skipping SQL import'
         fi &&
         echo 'Starting application...' &&
         uvicorn main:app --host 0.0.0.0 --port 8000 --reload
@@ -34,6 +40,8 @@ services:
     volumes:
       - ./backend:/app
       - ./roadmapdb_fixed.sql:/app/../roadmapdb_fixed.sql
+      - ./guides_data.sql:/app/../guides_data.sql
+      - ./videos_data.sql:/app/../videos_data.sql
     env_file:
       - ./backend/.env
     depends_on:
