@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from app.models.models import Roadmap, RoadmapTopic, TopicResource, User
+from app.models.models import Roadmap, RoadmapTopic, TopicResource, User, user_bookmarks, team_roadmaps, UserProgress
 from app.schemas.schemas import AdminRoadmapCreate, AdminTopicCreate, AdminResourceCreate
 
 def create_roadmap_with_topics(db: Session, roadmap_data: AdminRoadmapCreate, topics: List[AdminTopicCreate] = None):
@@ -99,6 +99,15 @@ def delete_roadmap(db: Session, roadmap_id: int):
         
         # Delete all topics
         db.query(RoadmapTopic).filter(RoadmapTopic.roadmap_id == roadmap_id).delete()
+        
+        # Delete user bookmarks
+        db.execute(user_bookmarks.delete().where(user_bookmarks.c.roadmap_id == roadmap_id))
+        
+        # Delete team roadmaps
+        db.execute(team_roadmaps.delete().where(team_roadmaps.c.roadmap_id == roadmap_id))
+        
+        # Delete user progress
+        db.query(UserProgress).filter(UserProgress.roadmap_id == roadmap_id).delete()
         
         # Delete roadmap
         db.delete(roadmap)

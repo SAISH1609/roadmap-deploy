@@ -7,6 +7,8 @@ import VideosSection from '../components/ui/VideosSection';
 import { useTeamStore, type Team } from '../store/teamStore';
 import { useactivityStore } from '../store/activityStore';
 
+import { useRoadmapStore } from '../store/roadmapStore';
+
 const HomePage = () => {
   const [selectedTab, setSelectedTab] = useState('personal');
   const navigate = useNavigate();
@@ -14,16 +16,18 @@ const HomePage = () => {
   const {
     stats,
     topicsCompletedToday,
-    roadmaps,
+    roadmaps: ongoingRoadmaps,
     fetchDashboardData,
     fetchTopicsCompletedToday,
   } = useactivityStore();
+  const { roadmaps: skillRoadmaps, fetchRoadmaps: fetchAllRoadmaps } = useRoadmapStore();
 
   useEffect(() => {
     fetchTeams();
     fetchDashboardData();
     fetchTopicsCompletedToday();
-  }, [fetchTeams, fetchDashboardData, fetchTopicsCompletedToday]);
+    fetchAllRoadmaps();
+  }, [fetchTeams, fetchDashboardData, fetchTopicsCompletedToday, fetchAllRoadmaps]);
 
   const handleProfileSetupClick = () => {
     navigate('/account/profile');
@@ -33,12 +37,6 @@ const HomePage = () => {
     setSelectedTeam(team);
     navigate('/account/team/activity');
   };
-
-  const skillRoadmaps = [
-    { name: 'React', slug: 'react', description: 'Build modern user interfaces with React.' },
-    { name: 'SQL', slug: 'sql', description: 'Learn relational database management.' },
-    { name: 'Python', slug: 'python', description: 'Explore Python for web development, data science, and more.' },
-  ];
 
   const visitStreakStat = stats.find(stat => stat.title === 'Visit Streak');
 
@@ -90,9 +88,9 @@ const HomePage = () => {
             {/* Ongoing Roadmap Choice */}
             <Card className="p-6">
               <h2 className="text-xl font-bold mb-4">Your Ongoing Roadmaps</h2>
-              {roadmaps && roadmaps.length > 0 ? (
+              {ongoingRoadmaps && ongoingRoadmaps.length > 0 ? (
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {roadmaps.map((roadmap) => (
+                  {ongoingRoadmaps.map((roadmap) => (
                     <Link to={`/roadmaps/${roadmap.slug}`} key={`${roadmap.slug}-${roadmap.title}`} className="no-underline">
                       <Card className="text-gray-900 dark:text-gray-100 h-full hover:bg-gray-800 transition-colors">
                         <CardHeader>
@@ -121,10 +119,10 @@ const HomePage = () => {
               <h2 className="text-xl font-bold">Explore Skill Roadmaps</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {skillRoadmaps.map((skill) => (
-                  <Link to={`/roadmaps/${skill.slug}`} key={skill.name} className="no-underline">
+                  <Link to={`/roadmaps/${skill.slug}`} key={skill.id} className="no-underline">
                     <Card className="p-4 h-full hover:bg-gray-800 transition-colors">
                       <div className="flex items-center justify-between">
-                        <h3 className="font-semibold">{skill.name}</h3>
+                        <h3 className="font-semibold">{skill.title}</h3>
                         <span aria-label="bookmark" className="ml-2">
                           <svg width="15" height="16" viewBox="0 0 20 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M4 2C2.89543 2 2 2.89543 2 4V22L10 18L18 22V4C18 2.89543 17.1046 2 16 2H4Z" fill="#2563eb" stroke="#2563eb" strokeWidth="2" strokeLinejoin="round"/>
