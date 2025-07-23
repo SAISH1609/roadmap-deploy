@@ -12,9 +12,13 @@ class UserBase(BaseModel):
     linkedin_url: Optional[str] = None
     website_url: Optional[str] = None
     profile_picture: Optional[str] = None
+    is_admin: Optional[bool] = False
 
 class UserCreate(UserBase):
     password: str
+
+class UserUpdate(UserBase):
+    password: Optional[str] = None
 
 class UserLogin(BaseModel):
     email: EmailStr
@@ -24,6 +28,7 @@ class User(UserBase):
     id: int
     is_active: bool
     is_verified: bool
+    is_admin: bool = False
     created_at: datetime
 
     class Config:
@@ -284,3 +289,59 @@ class AdminRoadmapWithTopics(BaseModel):
 class AdminTopicWithResources(BaseModel):
     topic: AdminTopicCreate
     resources: List[AdminResourceCreate] = []
+
+# Guide Schemas
+class GuideBase(BaseModel):
+    title: str
+    description: Optional[str] = None
+    type: Optional[str] = None  # article, tutorial, documentation
+    link: Optional[str] = None
+    order_index: Optional[int] = 1
+
+class GuideCreate(GuideBase):
+    pass
+
+class GuideUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    type: Optional[str] = None
+    link: Optional[str] = None
+    order_index: Optional[int] = None
+
+class Guide(GuideBase):
+    id: int
+    order_index: Optional[int] = 0
+    is_active: bool = True
+    created_at: datetime
+    updated_at: Optional[datetime]
+
+    class Config:
+        from_attributes = True
+
+# Video Schemas
+class VideoBase(BaseModel):
+    title: str
+    description: Optional[str] = None
+    link: str
+    duration: Optional[str] = None 
+    order_index: Optional[int] = 1
+
+class VideoCreate(VideoBase):
+    pass
+
+class VideoUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    link: Optional[str] = None
+    duration: Optional[str] = None
+    order_index: Optional[int] = None
+
+class Video(VideoBase):
+    id: int
+    order_index: Optional[int] = 0
+    is_active: bool = True
+    created_at: datetime
+    updated_at: Optional[datetime]
+
+    class Config:
+        from_attributes = True

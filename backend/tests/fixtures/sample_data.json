@@ -1,0 +1,49 @@
+{
+  "users": [
+    {
+      "email": "alice@example.com",
+      "username": "alice",
+      "full_name": "Alice Johnson",
+      "password": "alicepassword123"
+    },
+    {
+      "email": "bob@example.com",
+      "username": "bob",
+      "full_name": "Bob Smith",
+      "password": "bobpassword123"
+    },
+    {
+      "email": "charlie@example.com",
+      "username": "charlie",
+      "full_name": "Charlie Brown",
+      "password": "charliepassword123"
+    }
+  ],
+  "teams": [
+    {
+      "name": "Frontend Development Team",
+      "description": "Team focused on React and TypeScript development",
+      "skills": ["React", "TypeScript", "CSS", "JavaScript"]
+    },
+    {
+      "name": "Backend Development Team",
+      "description": "Team focused on Python and FastAPI development",
+      "skills": ["Python", "FastAPI", "PostgreSQL", "Docker"]
+    },
+    {
+      "name": "DevOps Team",
+      "description": "Team responsible for deployment and infrastructure",
+      "skills": ["Docker", "Kubernetes", "AWS", "CI/CD"]
+    }
+  ],
+  "invitations": [
+    {
+      "email": "newmember@example.com",
+      "role": "member"
+    },
+    {
+      "email": "newadmin@example.com",
+      "role": "admin"
+    }
+  ]
+}

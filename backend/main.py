@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 import uvicorn
 
 from app.database import get_db
-from app.routers import auth, roadmaps, teams, users, progress, admin, activity
+from app.routers import auth, roadmaps, teams, users, progress, admin, activity, content
 from app.models import models
 from app.database import engine
 
@@ -36,6 +36,7 @@ app.include_router(teams.router, prefix="/api/teams", tags=["Teams"])
 app.include_router(progress.router, prefix="/api/progress", tags=["Progress"])
 app.include_router(activity.router, prefix="/api/activity", tags=["Activity"])
 app.include_router(admin.router, prefix="/api/admin", tags=["Admin"])
+app.include_router(content.router, prefix="/api/content", tags=["Content"])
 
 @app.get("/")
 def read_root():

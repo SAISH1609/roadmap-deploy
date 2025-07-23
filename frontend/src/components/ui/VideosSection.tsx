@@ -1,44 +1,51 @@
-import React from "react";
-
-const videos = [
-  {
-    title: "The Ultimate Frontend Developer Roadmap",
-    duration: "10 Minutes",
-    link: "https://www.youtube.com/watch?v=w3nt4k2jZUo&t=1s",
-  },
-  {
-    title: "Session Based Authentication",
-    duration: "2 Minutes",
-    link: "https://www.youtube.com/watch?v=gKkBEOq_shs",
-  },
-  {
-    title: "Basic Authentication",
-    duration: "5 Minutes",
-    link: "https://www.youtube.com/watch?v=mwccHwUn7Gc&t=3s",
-  },
-  {
-    title: "Basics of Authentication",
-    duration: "5 Minutes",
-    link: "https://www.youtube.com/watch?v=Mcyt9SrZT6g",
-  },
-  {
-    title: "Graph Data Structure",
-    duration: "13 Minutes",
-    link: "https://www.youtube.com/watch?v=0sQE8zKhad0",
-  },
-  {
-    title: "Heap Data Structure",
-    duration: "11 Minutes",
-    link: "https://www.youtube.com/watch?v=F_r0sJ1RqWk",
-  },
-  {
-    title: "Tree Data Structure",
-    duration: "8 Minutes",
-    link: "https://www.youtube.com/watch?v=S2W3SXGPVyU",
-  },
-];
+import { useState, useEffect } from "react";
+import { contentApi, type Video } from "../../lib/api";
 
 const VideosSection = () => {
+  const [videos, setVideos] = useState<Video[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchVideos = async () => {
+      try {
+        const data = await contentApi.getVideos();
+        setVideos(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchVideos();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="max-w-3xl mx-auto bg-white/95 dark:bg-gray-900/90 rounded-2xl shadow-xl px-6 py-10 mb-8 border border-gray-200 dark:border-gray-800">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-300 rounded mb-8"></div>
+          <div className="space-y-4">
+            {[...Array(5)].map((_, index) => (
+              <div key={index} className="h-16 bg-gray-200 rounded-lg"></div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="max-w-3xl mx-auto bg-white/95 dark:bg-gray-900/90 rounded-2xl shadow-xl px-6 py-10 mb-8 border border-gray-200 dark:border-gray-800">
+        <div className="text-center text-red-600 dark:text-red-400">
+          <p>Error loading videos: {error}</p>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="max-w-3xl mx-auto bg-white/95 dark:bg-gray-900/90 rounded-2xl shadow-xl px-6 py-10 mb-8 border border-gray-200 dark:border-gray-800">
       <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-8 tracking-tight">
@@ -47,9 +54,9 @@ const VideosSection = () => {
         </span>
       </h1>
       <div className="grid gap-4">
-        {videos.map((video, index) => (
+        {videos.map((video) => (
           <a
-            key={index}
+            key={video.id}
             href={video.link}
             target="_blank"
             rel="noopener noreferrer"
