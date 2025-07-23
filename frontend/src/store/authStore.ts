@@ -1,18 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-
-// Define the shape of the user object based on your backend schema
-type User = {
-  id: number;
-  email: string;
-  username: string;
-  full_name: string;
-  is_active: boolean;
-  is_verified: boolean;
-  is_admin: boolean;
-  created_at: string;
-  updated_at: string | null;
-};
+import type { User } from '../types';
 
 // Define the shape of the authentication state
 type AuthState = {

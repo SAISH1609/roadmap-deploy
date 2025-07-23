@@ -1,8 +1,8 @@
 // Enhanced AITutorChat.tsx with full response + improved design
-import React, { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
+import type { Message } from "../../types";
 
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-type Message = { sender: "user" | "ai"; text: string };
 
 function formatAIResponse(text: string) {
   const codeBlockRegex = /```([\s\S]*?)```/g;
@@ -89,11 +89,12 @@ export default function AITutorChat() {
     if (!input.trim()) return;
 
     if (!GEMINI_API_KEY) {
-      setMessages(prev => [...prev, { sender: "ai", text: "❌ API key missing." }]);
+      const errorMsg: Message = { sender: "ai", text: "❌ API key missing." };
+      setMessages(prev => [...prev, errorMsg]);
       return;
     }
 
-    const userMsg = { sender: "user", text: input };
+    const userMsg: Message = { sender: "user", text: input };
     setMessages(prev => [...prev, userMsg]);
     setInput("");
     setLoading(true);

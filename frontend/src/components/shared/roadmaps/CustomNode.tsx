@@ -1,6 +1,6 @@
 // frontend/src/components/shared/roadmaps/CustomNode.tsx
 
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { Handle, Position } from 'reactflow';
 
 // Update the data prop type

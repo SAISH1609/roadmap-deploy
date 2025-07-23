@@ -1,25 +1,9 @@
 import { create } from 'zustand';
 import { getTeams, getTeamActivity } from '../services/teamService';
+import type { Team, Activity } from '../types';
 
-export type Team = {
-  id: number;
-  name: string;
-};
-
-type User = {
-  id: number;
-  email: string;
-  username: string;
-  full_name: string | null;
-};
-
-type Activity = {
-  id: number;
-  activity_type: string;
-  description: string;
-  created_at: string;
-  user: User;
-};
+// Re-export Team for backward compatibility
+export type { Team } from '../types';
 
 type TeamState = {
   teams: Team[];
