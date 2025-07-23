@@ -29,6 +29,7 @@ class User(Base):
     hashed_password = Column(String(255), nullable=False)
     is_active = Column(Boolean, default=True)
     is_verified = Column(Boolean, default=False)
+    is_admin = Column(Boolean, default=False)
     
     # Profile fields
     headline = Column(String(255))  
@@ -220,3 +221,29 @@ class TeamMembership(Base):
 
     team = relationship("Team", back_populates="memberships")
     user = relationship("User", back_populates="memberships")
+
+class Guide(Base):
+    __tablename__ = "guides"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(500), nullable=False)
+    description = Column(Text)
+    type = Column(String(50))  # e.g., "article", "tutorial", "documentation"
+    link = Column(String(1000))
+    order_index = Column(Integer, default=0)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+class Video(Base):
+    __tablename__ = "videos"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(500), nullable=False)
+    description = Column(Text)
+    link = Column(String(1000), nullable=False)
+    duration = Column(String(20))  
+    order_index = Column(Integer, default=0)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())

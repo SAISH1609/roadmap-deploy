@@ -1,32 +1,62 @@
-import React from 'react';
-
-const guides = [
-  { title: "Is SQL Hard to Learn? (An Expert's Take)", type: "Textual", link: "#" },
-  { title: "How Long Does It Take to Learn SQL? (An Expert's Take)", type: "Textual", link: "#" },
-  { title: "SQL vs. Python: Which should you learn for data analysis?", type: "Textual", link: "#" },
-  { title: "SQL vs. MySQL: What's the Difference?", type: "Textual", link: "#" },
-  { title: "30 SQL Queries Interview Questions and Answers", type: "Questions", link: "#" },
-  { title: "Top 30 SQL Interview Questions and Answers (With Quiz)", type: "Questions", link: "#" },
-  { title: "Data Analyst Career Path: My Pro Advice", type: "Textual", link: "#" },
-  { title: "TypeScript vs JavaScript: Which to Choose For Your Project", type: "Textual", link: "#" },
-  { title: "Top 30 JavaScript Interview Questions and Answers", type: "Questions", link: "#" },
-  { title: "How to Become a Data Analyst with No Experience: My Advice", type: "Textual", link: "#" },
-  { title: "50 Popular Golang Interview Questions (+ Quiz!)", type: "Questions", link: "#" },
-  { title: "50 Popular Data Analyst Interview Questions (+ Quiz!)", type: "Questions", link: "#" },
-  { title: "Top 50 Full Stack Developer Interview Questions", type: "Questions", link: "#" },
-  { title: "50 Popular Backend Developer Interview Questions and Answers", type: "Questions", link: "#" },
-];
+import { useState, useEffect } from "react";
+import { contentApi, type Guide } from "../../lib/api";
 
 export default function GuidesPage() {
+  const [guides, setGuides] = useState<Guide[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchGuides = async () => {
+      try {
+        const data = await contentApi.getGuides();
+        setGuides(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGuides();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="max-w-3xl mx-auto bg-white/95 dark:bg-gray-900/90 rounded-2xl shadow-xl px-6 py-10 mb-8 border border-gray-200 dark:border-gray-800">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-300 rounded mb-8"></div>
+          <div className="space-y-4">
+            {[...Array(5)].map((_, index) => (
+              <div key={index} className="h-16 bg-gray-200 rounded-lg"></div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="max-w-3xl mx-auto bg-white/95 dark:bg-gray-900/90 rounded-2xl shadow-xl px-6 py-10 mb-8 border border-gray-200 dark:border-gray-800">
+        <div className="text-center text-red-600 dark:text-red-400">
+          <p>Error loading guides: {error}</p>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="max-w-3xl mx-auto bg-white/95 dark:bg-gray-900/90 rounded-2xl shadow-xl px-6 py-10 mb-8 border border-gray-200 dark:border-gray-800">
       <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-8 tracking-tight">
-        <span className="bg-gradient-to-r from-black to-gray-700 bg-clip-text text-transparent">Guides & Resources</span>
+        <span className="bg-gradient-to-r from-black to-gray-700 bg-clip-text text-transparent">
+          Guides & Resources
+        </span>
       </h1>
       <div className="grid gap-4">
-        {guides.map((guide, index) => (
+        {guides.map((guide) => (
           <a
-            key={index}
+            key={guide.id}
             href={guide.link}
             target="_blank"
             rel="noopener noreferrer"

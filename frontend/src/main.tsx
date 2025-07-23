@@ -33,6 +33,8 @@ const InvitePage = lazy(() => import("./pages/InvitePage.tsx"));
 const GuidesPage = lazy(() => import("./components/ui/GuidesPage"));
 const AITutorChat = lazy(() => import("./components/ui/AITutorChat"));
 const RoadmapPage = lazy(() => import("./pages/RoadmapPage.tsx"));
+const AdminLoginPage = lazy(() => import("./pages/AdminLoginPage.tsx"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard.tsx"));
 
 const router = createBrowserRouter([
   {
@@ -94,6 +96,14 @@ const router = createBrowserRouter([
   {
     path: "/ai-tutor",
     element: <AITutorChat />,
+  },
+  {
+    path: "/admin/login",
+    element: <AdminLoginPage />,
+  },
+  {
+    path: "/admin/dashboard",
+    element: <AdminDashboard />,
   },
 ]);
 

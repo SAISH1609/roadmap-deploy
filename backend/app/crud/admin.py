@@ -129,6 +129,15 @@ def delete_topic(db: Session, topic_id: int):
         return True
     return False
 
+def delete_resource(db: Session, resource_id: int):
+    """Delete a resource"""
+    resource = db.query(TopicResource).filter(TopicResource.id == resource_id).first()
+    if resource:
+        db.delete(resource)
+        db.commit()
+        return True
+    return False
+
 def is_admin_user(db: Session, user_id: int) -> bool:
     """Check if user has admin privileges"""
     user = db.query(User).filter(User.id == user_id).first()
