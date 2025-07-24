@@ -28,5 +28,29 @@ RUN ls -la /app/dist
 # Make sure the port is exposed
 EXPOSE ${PORT}
 
-# Use shell form to ensure environment variables are expanded
-CMD ["sh", "-c", "npm run start"]
+# Create a more flexible startup script that handles all cases
+RUN echo '#!/bin/sh\n\
+# Create vite.config.js with allowed hosts\n\
+cat > /app/vite.config.temp.js << EOF\n\
+import { defineConfig } from "vite";\n\
+import { mergeConfig } from "vite";\n\
+import baseConfig from "./vite.config.js";\n\
+\n\
+export default mergeConfig(baseConfig, {\n\
+  preview: {\n\
+    host: "0.0.0.0",\n\
+    port: parseInt(process.env.PORT || "5173"),\n\
+    strictPort: true,\n\
+    allowedHosts: "all"\n\
+  }\n\
+});\n\
+EOF\n\
+\n\
+# Start the preview server with the temporary config\n\
+exec vite preview --host 0.0.0.0 --port "${PORT:-5173}" --strictPort --config /app/vite.config.temp.js\n\
+' > /app/start.sh
+
+RUN chmod +x /app/start.sh
+
+# Use the startup script
+CMD ["/app/start.sh"]
