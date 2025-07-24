@@ -58,7 +58,33 @@ else
 fi
 
 echo "Starting application..."
+
+# Print environment information for debugging
+echo "====== ENVIRONMENT DEBUG INFO ======"
+echo "DATABASE_URL format: $(echo $DATABASE_URL | sed 's/\/\/[^:]*:[^@]*@/\/\/**:**@/')"
+echo "PORT: $PORT"
+echo "ENVIRONMENT: $ENVIRONMENT"
+echo "FRONTEND_URL: $FRONTEND_URL"
+echo "PWD: $(pwd)"
+echo "Files in current directory: $(ls -la)"
+echo "==================================="
+
+# Copy environment variables to .env to ensure they're loaded properly
+echo "Creating production .env file"
+cat > .env << EOL
+DATABASE_URL=$DATABASE_URL
+PORT=$PORT
+ENVIRONMENT=production
+FRONTEND_URL=$FRONTEND_URL
+EOL
+
 # Ensure PORT is set to a default value if not provided
 PORT="${PORT:-8000}"
 echo "Starting uvicorn on port $PORT..."
-exec uvicorn main:app --host 0.0.0.0 --port $PORT
+
+# Use non-exec form to see any errors
+uvicorn main:app --host 0.0.0.0 --port $PORT
+
+# If uvicorn fails, this code will run
+echo "!!! APPLICATION FAILED TO START OR CRASHED !!!"
+echo "Check the logs above for errors."

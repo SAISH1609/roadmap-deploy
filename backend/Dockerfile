@@ -25,8 +25,12 @@ COPY . /app
 # Copy and make executable the railway startup script
 RUN chmod +x /app/railway_start.sh
 
-# Expose port
-EXPOSE 8000
+# Make sure the environment variables are accessible
+ENV PORT=8000
+ENV ENVIRONMENT=production
+
+# Expose port - Use PORT instead of hardcoding
+EXPOSE ${PORT}
 
 # Command to run the application
 CMD ["/app/railway_start.sh"]

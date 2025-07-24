@@ -2,11 +2,17 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import os
+import sys
 from dotenv import load_dotenv
 
+print("Loading database configuration...")
 load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    print("ERROR: DATABASE_URL environment variable is not set!")
+    print(f"Environment variables: {list(os.environ.keys())}")
+    # Don't exit here to allow the application to continue and show proper error messages
 
 # Configure engine with appropriate settings for production
 if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
