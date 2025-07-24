@@ -30,7 +30,20 @@ load_dotenv()
 def check_connection():
     """Test database connection"""
     try:
-        with engine.connect() as connection:
+        # Get the database URL from the environment
+        database_url = os.getenv("DATABASE_URL")
+
+        # Make sure we're using sslmode=disable
+        if "?" not in database_url:
+            database_url += "?sslmode=disable"
+        elif "sslmode=" not in database_url:
+            database_url += "&sslmode=disable"
+
+        # Create a dedicated engine just for testing
+        test_engine = create_engine(
+            database_url, connect_args={"sslmode": "disable"})
+
+        with test_engine.connect() as connection:
             result = connection.execute(text("SELECT version()"))
             version = result.fetchone()[0]
             print(f"Connected to PostgreSQL successfully!")
@@ -219,7 +232,8 @@ def main():
         "check-tables-exist"
     ], help="Command to execute")
 
-    parser.add_argument("--table-name", default="roadmap_topics", help="Table to check for data")
+    parser.add_argument("--table-name", default="roadmap_topics",
+                        help="Table to check for data")
 
     args = parser.parse_args()
 
