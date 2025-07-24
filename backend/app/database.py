@@ -20,8 +20,8 @@ engine_kwargs = {
     "max_overflow": 20,
 }
 
-# Add SSL configuration for production
-if os.getenv("ENVIRONMENT") == "production":
+# Add SSL configuration for production only if not already specified in URL
+if os.getenv("ENVIRONMENT") == "production" and "sslmode=" not in DATABASE_URL:
     engine_kwargs["connect_args"] = {"sslmode": "require"}
 
 engine = create_engine(DATABASE_URL, **engine_kwargs)
