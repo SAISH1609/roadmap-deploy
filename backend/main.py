@@ -18,7 +18,7 @@ app = FastAPI(
 
 # Configure CORS for both development and production
 allowed_origins = [
-    "http://localhost:3000", 
+    "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://localhost:3001",
     "http://localhost:5173",
@@ -31,7 +31,8 @@ if frontend_url:
 
 # In production, temporarily allow all origins for troubleshooting
 if os.getenv("ENVIRONMENT") == "production":
-    allowed_origins = ["*"]  # Allow all origins temporarily for troubleshooting
+    # Allow all origins temporarily for troubleshooting
+    allowed_origins = ["*"]
     print(f"CORS: Using permissive CORS policy for troubleshooting")
 
 app.add_middleware(
@@ -52,17 +53,32 @@ app.include_router(activity.router, prefix="/api/activity", tags=["Activity"])
 app.include_router(admin.router, prefix="/api/admin", tags=["Admin"])
 app.include_router(content.router, prefix="/api/content", tags=["Content"])
 
+
 @app.get("/")
 def read_root():
     return {"message": "Roadmap.sh Clone API is running!"}
+
 
 @app.get("/health")
 def health_check():
     return {"status": "healthy", "message": "API is running", "cors": "enabled"}
 
+
 @app.get("/cors-test")
 def cors_test():
     return {"message": "CORS is working!", "origin": "allowed"}
+
+
+@app.get("/port-test")
+def port_test():
+    port = os.getenv("PORT", "Not set")
+    return {
+        "message": "Port test endpoint",
+        "port_env_var": port,
+        "host": "0.0.0.0",
+        "environment": os.getenv("ENVIRONMENT", "Not set")
+    }
+
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))

@@ -58,4 +58,7 @@ else
 fi
 
 echo "Starting application..."
+# Ensure PORT is set to a default value if not provided
+PORT="${PORT:-8000}"
+echo "Starting uvicorn on port $PORT..."
 exec uvicorn main:app --host 0.0.0.0 --port $PORT
