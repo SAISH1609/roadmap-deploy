@@ -14,8 +14,18 @@ COPY . .
 # Build the application for production
 RUN npm run build
 
-# Expose port
-EXPOSE 5173
+# Set environment variables
+ENV PORT=5173
+ENV NODE_ENV=production
 
-# For production, we'll use preview mode which serves the built files
-CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0", "--port", "5173"]
+# Make sure favicon is properly handled
+RUN mkdir -p /app/dist
+RUN cp -f public/favicon.ico dist/favicon.ico || echo "Favicon already in dist"
+
+# Debug - list files to verify
+RUN ls -la /app/dist
+
+EXPOSE ${PORT}
+
+# Use the start script from package.json which has been updated to handle PORT env var
+CMD ["npm", "run", "start"]

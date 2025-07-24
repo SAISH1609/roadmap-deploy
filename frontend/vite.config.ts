@@ -20,11 +20,27 @@ export default defineConfig({
   },
   preview: {
     host: '0.0.0.0',
-    port: 5173,
+    port: parseInt(process.env.PORT || '5173'),
   },
   build: {
     outDir: 'dist',
     sourcemap: false,
     minify: 'esbuild',
+    // Handle assets with more reliable settings
+    assetsDir: '',
+    rollupOptions: {
+      output: {
+        // Place static files at the root level
+        assetFileNames: (assetInfo) => {
+          // Keep favicon.ico at the root level
+          if (assetInfo.name === 'favicon.ico') {
+            return '[name].[ext]';
+          }
+          return 'assets/[name]-[hash].[ext]';
+        }
+      }
+    },
+    // Copy the favicon.ico to the root of the dist directory
+    emptyOutDir: true,
   },
 })
