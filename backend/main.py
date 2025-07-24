@@ -29,11 +29,10 @@ frontend_url = os.getenv("FRONTEND_URL")
 if frontend_url:
     allowed_origins.append(frontend_url)
 
-# In production, you might want to be more restrictive
+# In production, temporarily allow all origins for troubleshooting
 if os.getenv("ENVIRONMENT") == "production":
-    # Add your Railway frontend domain here once you know it
-    # allowed_origins = ["https://your-frontend-domain.railway.app"]
-    pass
+    allowed_origins = ["*"]  # Allow all origins temporarily for troubleshooting
+    print(f"CORS: Using permissive CORS policy for troubleshooting")
 
 app.add_middleware(
     CORSMiddleware,

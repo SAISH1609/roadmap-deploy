@@ -3,9 +3,25 @@
 # Railway database initialization script
 echo "Starting database initialization..."
 
-# Wait for database to be ready
+# Print out database URL (with password masked)
+echo "DATABASE_URL format: $(echo $DATABASE_URL | sed 's/\/\/[^:]*:[^@]*@/\/\/**:**@/')"
+
+# Wait for database to be ready - with retries
 echo "Waiting for database connection..."
-python manage_db.py check-connection
+max_retries=5
+retry_count=0
+
+until python manage_db.py check-connection || [ $retry_count -eq $max_retries ]
+do
+  echo "Failed to connect to database, retrying ($((retry_count+1))/$max_retries)..."
+  retry_count=$((retry_count+1))
+  sleep 5
+done
+
+if [ $retry_count -eq $max_retries ]; then
+  echo "Failed to connect to database after $max_retries attempts"
+  echo "Continuing anyway in case the app can handle reconnection..."
+fi
 
 # Create tables
 echo "Creating database tables..."
