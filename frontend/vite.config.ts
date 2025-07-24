@@ -21,13 +21,8 @@ export default defineConfig({
   preview: {
     host: '0.0.0.0',
     port: parseInt(process.env.PORT || '5173'),
-    // Allow Railway hosts and any other hosts in production
-    allowedHosts: [
-      'frontend-production-2660.up.railway.app',
-      '*.up.railway.app',
-      'localhost',
-      '127.0.0.1'
-    ],
+    // Allow all hosts in production for Railway's dynamic hostnames
+    allowedHosts: true,
   },
   build: {
     outDir: 'dist',

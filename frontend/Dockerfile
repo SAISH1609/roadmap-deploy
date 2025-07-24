@@ -20,7 +20,7 @@ RUN npm run build
 
 # Make sure favicon is always in the dist directory
 RUN mkdir -p /app/dist
-RUN cp -f public/favicon.ico dist/favicon.ico
+RUN cp -f public/favicon.ico dist/favicon.ico || echo "Favicon already exists"
 
 # Debug - list files to verify
 RUN ls -la /app/dist
@@ -28,28 +28,10 @@ RUN ls -la /app/dist
 # Make sure the port is exposed
 EXPOSE ${PORT}
 
-# Create a more flexible startup script that handles all cases
-RUN echo '#!/bin/sh\n\
-# Create vite.config.js with allowed hosts\n\
-cat > /app/vite.config.temp.js << EOF\n\
-import { defineConfig } from "vite";\n\
-import { mergeConfig } from "vite";\n\
-import baseConfig from "./vite.config.js";\n\
-\n\
-export default mergeConfig(baseConfig, {\n\
-  preview: {\n\
-    host: "0.0.0.0",\n\
-    port: parseInt(process.env.PORT || "5173"),\n\
-    strictPort: true,\n\
-    allowedHosts: "all"\n\
-  }\n\
-});\n\
-EOF\n\
-\n\
-# Start the preview server with the temporary config\n\
-exec vite preview --host 0.0.0.0 --port "${PORT:-5173}" --strictPort --config /app/vite.config.temp.js\n\
-' > /app/start.sh
-
+# Create a start script for the preview server - using basic method
+RUN echo '#!/bin/sh' > /app/start.sh
+RUN echo 'echo "Starting Vite preview server on port $PORT..."' >> /app/start.sh
+RUN echo 'cd /app && npx vite preview --host 0.0.0.0 --port $PORT' >> /app/start.sh
 RUN chmod +x /app/start.sh
 
 # Use the startup script
